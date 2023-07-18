@@ -1,0 +1,147 @@
+﻿@model WxEpg.Mobile.ViewModels.CommentModel
+@{
+    ViewBag.Title = "评论(" + Model.VideoName + ")";
+    Layout = "~/Views/Shared/_LayoutNoMenu.cshtml";
+}
+
+@section styles{
+    <link href="~/Content/comment.css" rel="stylesheet" />
+}
+
+<p class="topbar">
+    <a class="back" onclick="window.history.back()"><i class="fa fa-arrow-left" title="返回"></i></a>
+    @Model.VideoName
+    <small class="total">@(Model.Data == null ? 0 : Model.Data.Count)条评论</small>
+</p>
+
+<div class="comments">
+    <div class="comments-head">
+        <h2 class="comments-title"><span>热门评论</span></h2>
+    </div>
+    <div class="comments-body">
+        @if (Model.Data == null)
+        {
+            <p class="nodata">暂无评论！快来添加评论吧！</p>
+        }
+        else
+        {
+            if (Model.Data.Count <= 0)
+            {
+            <p class="nodata">暂无评论！快来添加评论吧！</p>
+            }
+            else
+            {
+                foreach (var item in Model.Data)
+                {
+                    DateTime dn = DateTime.Now;
+                    DateTime dc = (DateTime)item.CreateTime;
+                    TimeSpan ts = dn - dc;                    
+            <div class="comments-item" data-id="@item.Id">
+                @*<img class="comments-portrait" src="javascript:void(0)" alt="@item.Observer" />*@
+                <div class="comments-portrait">^-^</div>
+                <div class="comments-info">
+                    <p class="user">@item.Observer</p>
+                    <p class="text">@item.Contents</p>
+                    <p class="action">
+                        <small class="time">@(((ts.Days == 0) ? "" : ts.Days + "天") + ((ts.Hours == 0) ? "" : ts.Hours + "时") + ((ts.Minutes == 0) ? "" : ts.Minutes + "分") + ((ts.Seconds == 0 && (int)ts.TotalSeconds == 0) ? "刚刚" : ts.Seconds + "秒之前"))</small>
+                        <small class="cshare" data-title="@(Model.VideoName)评论（@item.UserId）" data-desc="评论内容：@item.Contents"><i class="fa fa-weixin"></i>分享</small>
+                        <small class="support"><i class="fa fa-thumbs-o-up"></i><span class="count">@(item.SupportCount == null ? 0 : item.SupportCount)</span></small>
+                    </p>
+                </div>
+            </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+<div class="comment-trigger">
+    <input class="btn-trigger" type="text" placeholder="我来说两句……" />
+    <div class="comment-container">
+        @using (Html.BeginForm("Comment", "Video", FormMethod.Post))
+        {
+            <input type="hidden" name="sourceId" value="@Model.VideoId" />
+            <ul>
+                <li>
+                    <textarea class="comment-txtarea" name="contents" rows="5" placeholder="我来说两句……" required></textarea>
+                </li>
+                <li>
+                    <input class="btn-publish" type="submit" value="发表" />
+                </li>
+            </ul>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="~/Scripts/jwx.helper.js"></script>
+    <script type="text/javascript">
+        wxConfig('@Html.Raw(Model.Sign)');
+    </script>
+
+    <script type="text/javascript">
+        function initStyle() {
+            $(".comments-item").each(function () {
+                var info = $(this).find(".comments-info");
+                info.width($(this).width() - 50);
+                $(this).height(info.outerHeight());
+            });
+        }
+
+        //弹出评论表单
+        function commentTrigger() {
+            $(document).not(".comment-container,.comment-container *").click(function () {
+                $(".comment-container").hide();
+            });
+            $(".comment-trigger").click(function (event) {
+                event.stopPropagation();
+                $(".comment-container").show();
+            });
+        }
+
+        //点赞，顶一个，支持功能
+        function addSupport(url) {
+            $(".support").each(function (index) {
+                $(this).click(function () {
+                    var count = $(".support .count").eq(index).text();
+                    var commentId = $(".comments-item").eq(index).data("id");
+                    $.getJSON(url, { "commentId": commentId }, function (data) {
+                        if (data.status) {
+                            $(".support .count").eq(index).text(parseInt(count) + 1);
+                        } else {
+                            alert("点赞失败！");
+                        }
+                    });
+                });
+            });
+        }
+
+
+        //分享评论
+        function shareComment(url) {
+            $(".comments .cshare").click(function () {
+                var title = $(this).data().title;
+                var desc = $(this).data().desc;
+                var data = { title: title, desc: desc, link: window.location.href };
+                $(".share-container").show().css({ "min-height": $(window).height(), "height": $(window).height() });
+                $("body").css("overflow", "hidden");
+                wxReady(data, url);
+            });
+            $(".share-container").on("click focus", function () {
+                $(".share-container").hide();
+                $("body").css("overflow", "auto");
+            });
+        }
+
+        $(document).ready(function () {
+            var surl = '@Url.Action("AddSupport", "Video")';
+            var curl = '@Url.Action("AddShareMsg", "Base")';
+
+            initStyle();
+            commentTrigger();
+            addSupport(surl);
+            shareComment(curl);
+        });
+    </script>
+}

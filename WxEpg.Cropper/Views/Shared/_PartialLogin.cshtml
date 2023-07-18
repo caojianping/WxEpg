@@ -1,0 +1,6 @@
+﻿@if (Session["USER"] != null)
+{
+    var suser = (EpgAuth.EpgUser)Session["USER"];
+    @Html.ActionLink("注销", "Logout", "Account", null, new { @class = "logout" })
+    <a class="user">@suser.UserName</a>
+}

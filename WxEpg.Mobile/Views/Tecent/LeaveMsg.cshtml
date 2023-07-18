@@ -1,0 +1,149 @@
+﻿@model List<WxEpg.Mobile.Models.LeaveMsgView>
+@using WxEpg.Mobile.Models
+@{
+    ViewBag.Title = "留言板";
+}
+
+@section styles{
+    <style type="text/css">
+        #leaveMsg li {
+            padding-top: 10px;
+        }
+
+            #leaveMsg li:last-child {
+                padding-bottom: 15px;
+            }
+
+            #leaveMsg li [type='submit'] {
+                display: block;
+                padding: 10px 0;
+                width: 100%;
+                font-size: 1.2em;
+                -moz-border-radius: .4em;
+                -webkit-border-radius: .4em;
+                border-radius: .4em;
+            }
+
+        table {
+            font-size: .875em;
+        }
+
+            table tr:nth-child(4n-1) {
+                background-color: #f9f9f9;
+            }
+
+        .item {
+            cursor: pointer;
+        }
+
+            .item td {
+                padding: 10px 0;
+            }
+
+                .item td .lcontent {
+                    display: block;
+                    margin: auto;
+                    width: 100px;
+                    text-align: center;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    -ms-text-overflow: ellipsis;
+                    -o-text-overflow: ellipsis;
+                    text-overflow: ellipsis;
+                }
+
+        .detail {
+            display: none;
+            background-color: aliceblue;
+        }
+
+            .detail ul {
+                padding: 10px 15px;
+            }
+
+                .detail ul li label {
+                    display: block;
+                    padding: 3px 0;
+                }
+    </style>
+}
+
+<div class="panel">
+    <div class="panel-head">
+        <h2 class="panel-title">添加我的留言</h2>
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm("LeaveMsg", "Tecent", FormMethod.Post))
+        {
+            <ul id="leaveMsg">
+                <li>
+                    <textarea name="contents" rows="6" placeholder="快来添加自己的留言吧……" required="required"></textarea>
+                </li>
+                <li>
+                    <input class="btn btn-gray" type="submit" value="提交" />
+                </li>
+            </ul>    
+        }
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-head">
+        <h2 class="panel-title">留言列表</h2>
+    </div>
+    <div class="panel-body">
+        <table>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="item">
+                        <td>@item.UserName</td>
+                        <td><span class="lcontent" title="@item.Contents">@item.Contents</span></td>
+                        <td>@item.CreateTime.ToString("MM月dd日 hh时mm分")</td>
+                        @(item.Status ? @Html.Raw("<td class=\"cgreen\">已回复</td>") : @Html.Raw("<td class=\"cred\">未回复</td>"))
+                        <td>@item.Reply</td>
+                    </tr>
+                    <tr class="detail">
+                        <td colspan="5">
+                            <ul>
+                                <li>
+                                    <label>留言详情：</label>
+                                    <textarea rows="3">@item.Contents</textarea>
+                                </li>
+                                <li>
+                                    <label>回复详情：</label>
+                                    <textarea rows="3">@item.Reply</textarea>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function initMsg(msg) {
+            if (!msg) return;
+            alert(msg);
+        }
+
+        function leaveMsgToggle() {
+            $(".item").each(function (index, element) {
+                $(this).click(function () {
+                    $(".detail").eq(index).toggle();
+                    $(".detail").not($(".detail").eq(index)).hide();
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            var msg = '@TempData["Message"]';
+
+            initMsg(msg);
+            leaveMsgToggle();
+        });
+    </script>
+}

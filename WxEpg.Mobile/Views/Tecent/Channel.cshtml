@@ -1,0 +1,184 @@
+﻿@model WxEpg.Mobile.ViewModels.ChannelModel
+@using WxEpg.Mobile.ViewModels
+@{
+    ViewBag.Title = string.IsNullOrEmpty(Model.CompanyName) ? "频道表：未设置运营商" : "频道表：" + Model.CompanyName;    
+}
+
+@section styles{
+    <style type="text/css">
+        .search .fa-search {
+            left: 10px;
+        }
+
+        .search input[type=text] {
+            left: 36px;
+        }
+
+        #channels {
+            margin: 57px 0 48px 0;
+            padding: 0 15px;
+            background-color: white;
+        }
+
+            #channels li {
+                position: relative;
+                width: 100%;
+                height: 60px;
+                border-bottom: 1px solid lightgray;
+            }
+
+        .thumbnail {
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            width: 40px;
+            height: 20px;
+        }
+
+        .eimg {
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            display: none;
+            width: 40px;
+            height: 20px;
+            font-size: .75em;
+            font-style: italic;
+            line-height: 20px;
+            text-align: center;
+            color: gray;
+        }
+
+        .name {
+            margin-left: 85px;
+            height: 60px;
+            line-height: 60px;
+            color: #333;
+        }
+
+        .station {
+            position: absolute;
+            top: 32px;
+            right: 15px;
+            font-size: .875em;
+            color: deepskyblue;
+        }
+    </style>
+}
+
+<div class="header">
+    <div class="search">
+        <i class="fa fa-search"></i>
+        <input type="text" placeholder="频道名称、频道台号" />
+    </div>
+</div>
+
+<ul id="channels"></ul>
+
+@section scripts{
+    <script type="text/javascript">
+        var isFinish = false;
+        var currentIndex = 0;
+
+        //初始化数据
+        function initData(url, companyId, callback) {
+            //var count = Math.ceil($(window).height() / 60);
+            var count = 20;
+            currentIndex = 0;
+            getPartsData(url, companyId, 0, count, callback);
+        }
+
+        //加载分部数据
+        function windowScroll(url, companyId, callback) {
+            $(window).scroll(function () {
+                var top = $(this).scrollTop();
+                var wh = $(window).height();
+                var dh = $(document).height();
+                //判断数据是否全部加载
+                if (isFinish) return;
+                //判断滚动条是否抵达底部
+                if (top + wh == dh) {
+                    currentIndex = $("#channels li").length;
+                    var currentId = $("#channels li:last-child").data("cid");
+                    getPartsData(url, companyId, currentId, 30, callback);
+                }
+            });
+        }
+
+        //填充数据
+        function fillData(data, status, xhr) {
+            var count = data.length;
+            if (count <= 0) {
+                isFinish = true;
+                return;
+            }
+
+            var lis = '';
+            $.each(data, function (index, element) {
+                var src = (element.channelName) ? "http://www.epg.org.cn:6533/centerserver/thumbnails/" + element.channelName + ".jpg" : '';
+                var link = '@Url.Action("Event", "Tecent")' + "?channelId=" + element.channelId + "&playDate=" + '@DateTime.Now.Date.ToString("yyyy-MM-dd")';
+                var li = '<li data-cid="' + element.Id + '">' +
+                    '<img class="thumbnail" src="' + src + '" alt="' + element.name + '" />' +
+                    '<p class="eimg">^-^</p>' +
+                    '<a class="name" href="' + link + '">' + element.name + '</a>' +
+                    '<span class="station">' + element.stationNumber + '</span></li>';
+                lis += li;
+            });
+            //临时添加
+            lis += '<li style="color:orangered;text-align:center;line-height: 60px;">查看更多内容，请登录……</li>';
+            $("#channels").append(lis);
+
+            var endIndex = currentIndex + data.length;
+            $("#channels li .thumbnail").each(function (index, element) {
+                if (index >= currentIndex && index < endIndex) {
+                    var src = $(this).attr("src");
+                    if (!src) {
+                        $(this).hide();
+                        $(this).siblings(".eimg").show();
+                    }
+                    $(this).error(function () {
+                        $(this).hide();
+                        $(this).siblings(".eimg").show();
+                    });
+                }
+            });
+        }
+
+        //加载数据
+        function getPartsData(url, companyId, cid, count, callback) {
+            var args = { companyId: companyId, cid: cid, count: count };
+            $.getJSON(url, args, function (data, status, xhr) {
+                callback(data, status, xhr);
+            });
+        }
+
+        //频道检索
+        function query() {
+            $(".search input[type='text']").on("input", function () {
+                var value = $(this).val();
+                if (value.length > 0) {
+                    $("#channels li").each(function (index, element) {
+                        var name = $(element).find(".name").text();
+                        var station = $(element).find(".station").text();
+                        if (name.toLowerCase().indexOf(value.toLowerCase()) > -1 || station.indexOf(value) > -1) {
+                            $(element).show();
+                        } else {
+                            $(element).hide();
+                        }
+                    });
+                } else {
+                    $("#channels li").show();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var companyId = '@Model.CompanyId';
+            var url = '@Url.Action("GetPartsUserChannels", "Tecent")';
+
+            initData(url, companyId, fillData);
+            //windowScroll(url, companyId, fillData);
+            query();
+        });
+    </script>
+}

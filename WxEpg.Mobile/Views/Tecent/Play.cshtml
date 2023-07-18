@@ -1,0 +1,493 @@
+﻿@model WxEpg.Mobile.ViewModels.PlayModel
+@{
+    ViewBag.Title = "正在播出(" + Model.ShowTime + ")";
+    string[] types = new string[11] { "电视剧", "电影", "娱乐", "新闻", "少儿", "体育", "财经", "生活", "科教", "电购", "其它" };
+}
+
+@section styles{
+    <style type="text/css">
+        .pnavs-container {
+            width: 100%;
+            height: 40px;
+            background-color: white;
+            border-bottom: 1px solid lightgray;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .pnavs {
+            height: 40px;
+            overflow-y: hidden;
+        }
+
+            .pnavs li {
+                float: left;
+                border-right: 1px solid lightgray;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+                .pnavs li:last-child {
+                    border-right: none;
+                }
+
+                .pnavs li a {
+                    padding: 0 6px;
+                    display: block;
+                    height: 40px;
+                    line-height: 40px;
+                    color: black;
+                    text-align: center;
+                }
+
+                    .pnavs li a:hover {
+                        color: deepskyblue;
+                    }
+
+                    .pnavs li a.active {
+                        height: 38px;
+                        line-height: 38px;
+                        color: deepskyblue;
+                        border-bottom: 2px solid deepskyblue;
+                    }
+
+        .search-container {
+            position: relative;
+            height: 42px;
+        }
+
+        .time-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 15%;
+            height: 42px;
+            text-align: center;
+            border-right: 1px solid lightgray;
+        }
+
+        #clock {
+            width: 100%;
+            height: 42px;
+            line-height: 42px;
+            font-size: 1.6em;
+            color: #333;
+            cursor: pointer;
+        }
+
+        #time {
+            position: absolute;
+            top: 42px;
+            left: 2px;
+            z-index: 9999;
+            display: none;
+            width: 180px;
+            height: 250px;
+            overflow: auto;
+            color: white;
+            background-color: #424242;
+        }
+
+            #time li {
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                border-bottom: 1px solid #3c3c3c;
+            }
+
+                #time li a {
+                    display: inline-block;
+                    width: 100%;
+                    height: 100%;
+                    color: white;
+                }
+
+        .search {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 3px 15px;
+        }
+
+            .search .fa-search {
+                left: 10px;
+            }
+
+            .search input[type=text] {
+                left: 36px;
+            }
+
+        #plays {
+            margin: 84px 0 48px 0;
+            padding: 0 15px;
+        }
+
+        .plays-item {
+            position: relative;
+            height: 130px;
+            background-color: white;
+            border-bottom: 1px solid lightgray;
+        }
+
+        .plays-left {
+            position: absolute;
+            left: 0;
+            top: 15px;
+        }
+
+            .plays-left .poster {
+                margin: auto;
+                padding: 2px;
+                width: 100px;
+                height: 75px;
+                border: 1px solid lightgray;
+            }
+
+            .plays-left .eimg {
+                display: none;
+                margin: auto;
+                padding: 2px;
+                width: 100px;
+                height: 75px;
+                font-size: .875em;
+                font-style: italic;
+                text-align: center;
+                line-height: 75px;
+                color: gray;
+                border: 1px solid lightgray;
+            }
+
+            .plays-left p {
+                text-align: center;
+            }
+
+            .plays-left .clove {
+                margin-right: 5px;
+                font-size: .875em;
+                color: red;
+            }
+
+        .plays-center {
+            position: absolute;
+            top: 12px;
+            left: 118px;
+            overflow: hidden;
+        }
+
+            .plays-center p {
+                padding-bottom: 2px;
+            }
+
+            .plays-center .ename {
+                overflow: hidden;
+                white-space: nowrap;
+                -ms-text-overflow: ellipsis;
+                -o-text-overflow: ellipsis;
+                text-overflow: ellipsis;
+            }
+
+                .plays-center .ename a {
+                    font-size: .875em;
+                    font-weight: bold;
+                    color: #333;
+                }
+
+            .plays-center .cname {
+                font-size: .875em;
+                color: gray;
+            }
+
+            .plays-center .ptime, .plays-center .hasplay {
+                font-size: .75em;
+            }
+
+            .plays-center .progressbar {
+                margin: 5px 0;
+                width: 102px;
+                height: 6px;
+                border: 1px solid gray;
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                border-radius: 4px;
+            }
+
+                .plays-center .progressbar .progressbar-value {
+                    height: 6px;
+                    -webkit-border-radius: 4px;
+                    -moz-border-radius: 4px;
+                    border-radius: 4px;
+                    background-color: deepskyblue;
+                }
+
+        .plays-right {
+            position: absolute;
+            top: 40px;
+            right: 0;
+        }
+
+            .plays-right p:first-child {
+                font-size: .875em;
+                text-align: center;
+            }
+
+            .plays-right .ccomment {
+                font-size: 1.2em;
+            }
+    </style>
+}
+
+<div class="header">
+    <div class="pnavs-container">
+        <ul class="pnavs clearfix">
+            <li><a data-type="*" href="~/Tecent/Play?playTime=@Model.PlayTime&&showTime=@Model.ShowTime&category=*">全部</a></li>
+            @foreach (string type in types)
+            {
+                <li><a data-type="@type" href="~/Tecent/Play?playTime=@Model.PlayTime&&showTime=@Model.ShowTime&category=@type">@type</a></li>
+            }
+        </ul>
+    </div>
+
+    <div class="search-container">
+        <div class="time-container">
+            <i class="fa fa-tachometer" id="clock"></i>
+            <ul id="time">
+                @{
+                    DateTime now = DateTime.Now;
+                    for (int i = 0; i < 24; i++)
+                    {
+                        DateTime time = now.AddHours(i);
+                        if (time == now)
+                        {<li><a href="~/Tecent/Play?playTime=@time&showTime=当前时间">当前时间</a></li>}
+                        else if (time.Date == now.Date)
+                        {<li><a href="~/Tecent/Play?playTime=@time&showTime=@(time.Hour)点">@(time.Hour)点</a></li>}
+                        else
+                        {<li><a href="~/Tecent/Play?playTime=@time&showTime=明天@(time.Hour)点">明天@(time.Hour)点</a></li>}
+                    }
+                }
+            </ul>
+        </div>
+        <div class="search">
+            <i class="fa fa-search"></i>
+            <input type="text" placeholder="频道名称、节目名称" />
+        </div>
+    </div>
+</div>
+
+<div id="plays"></div>
+
+@section scripts{
+    <script type="text/javascript">
+        var isFinish = false;
+
+        //初始化样式
+        function initStyle() {
+            //设置.pnavs导航栏的宽度
+            var nw = 0;
+            $(".pnavs li").each(function () { nw += $(this).outerWidth(); });
+            $(".pnavs").width(nw);
+
+            //设置搜索框的宽度            
+            var scw = Math.ceil($(".search-container").outerWidth());
+            var tw = Math.ceil($(".time-container").outerWidth());
+            var sw = Math.floor(scw - tw - 52);
+            $(".search").width(sw);
+        }
+
+        //导航栏切换效果
+        function pnavsToggle(category) {
+            $(".pnavs li a").each(function () {
+                var type = $(this).data("type");
+                if (type === category) {
+                    $(".pnavs li a").removeClass("active");
+                    $(this).addClass("active");
+                }
+            });
+            var pos = $(".active").position();
+            var w = $(".pnavs-container").outerWidth();
+            if (pos.left > w / 2) {
+                $(".pnavs-container").scrollLeft(pos.left - w / 2);
+            }
+        }
+
+        //时间控件切换效果
+        function clockToggle() {
+            $(".time-container").hover(function () {
+                $("#time").show();
+            }, function () {
+                $("#time").hide();
+            });
+        }
+
+        //初始化数据
+        function initData(url, companyId, playTime, category, callback) {
+            //var count = Math.ceil($(window).height() / 131);
+            var count = 10;
+            getPartsData(url, companyId, playTime, category, '', count, callback);
+        }
+
+        //加载分部数据
+        function windowScroll(url, companyId, playTime, category, callback) {
+            $(window).scroll(function () {
+                var top = $(this).scrollTop();
+                var wh = $(window).height();
+                var dh = $(document).height();
+                //判断数据是否全部加载
+                if (isFinish) return;
+                //判断滚动条是否抵达底部
+                if (top + wh == dh) {
+                    var cid = $("#plays .plays-item:last-child").data("cid");
+                    getPartsData(url, companyId, playTime, category, cid, 5, callback);
+                }
+            });
+        }
+
+        //填充数据
+        function fillData(data, status, xhr) {
+            var count = data.length;
+            if (count <= 0) {
+                isFinish = true;
+                return;
+            }
+
+            var html = '';
+            $.each(data, function (index, element) {
+                //左侧容器
+                var src = element.programid > 0 ? "http://www.epg.org.cn:6533/video/Img/" + element.programid + "_1.jpg" : '';
+                var lcount = !element.LoveCount ? 0 : element.LoveCount;
+                var left = '<div class="plays-left">' +
+                    '<img class="poster" src="' + src + '" alt="' + element.eventname + '" />' +
+                    '<p class="eimg">暂无图片</p>' +
+                    '<p><i class="clove fa fa-heart-o"></i><span>' + lcount + '</span></p></div>';
+
+                //中间容器
+                var elink = element.programid > 0 ?
+                    '<a href="/Video/Index?id=' + element.programid + '" style="text-decoration:underline">' + element.eventname + '</a>' :
+                    '<a href="javascript:void(0)">' + element.eventname + '</a>';
+                var hasplay = parseFloat(element.hasplay) / parseFloat(element.duration);
+                var progressbar = Date.parse(element.playtime) <= Date.now() && Date.parse(element.playtime) + element.duration * 1000 > Date.now() ?
+                    '<div class="progressbar-value"></div>' : '<div class="progressbar-value" style="background-color: gray"></div>';
+                var ptime = (new Date(Date.parse(element.playtime))).toCustomString("hh:mm");
+                var center = '<div class="plays-center">' +
+                    '<p class="ename" title="' + element.eventname + '">' + elink + '</p>' +
+                    '<p class="cname">' + element.channelName + '</p>' +
+                    '<p class="ptime">播出时间：' + ptime + '</p>' +
+                    '<p class="hasplay">已播出：' + hasplay.toPercent() + '</p>' +
+                    '<div class="progressbar" data-value="' + hasplay * 100 + '">' + progressbar + '</div></div>';
+
+                //右侧容器
+                var ccount = !element.CommentCount ? 0 : element.CommentCount;
+                var right = '<div class="plays-right"><p>' + ccount + '</p><p><i class="ccomment fa fa-list"></i></p></div>';
+                var item = '<div class="plays-item" data-cid="' + element.playtime + '" data-cname="' + element.channelName + '" data-ename="' + element.eventname + '">' + left + center + right + '</div>';
+                html += item;
+            });
+            html += '<div class="plays-item" style="color:orangered;text-align:center;line-height: 130px;">查看更多内容，请登录……</div>';
+            $("#plays").append(html);
+
+            setItemStyle();
+            errorImage();
+            progressbar();
+        }
+
+        //加载数据
+        function getPartsData(url, companyId, playTime, category, cid, count, callback) {
+            var args = { companyId: companyId, playTime: playTime, category: category, cid: cid, count: count };
+            $.getJSON(url, args, function (data, status, xhr) {
+                callback(data, status, xhr);
+            });
+        }
+
+        //设置数据项样式
+        function setItemStyle() {
+            var w = $(".plays-item").outerWidth() - (118 + 30);
+            $(".plays-center,.plays-center .ename").width(w);
+        }
+
+        //错误图片显示
+        function errorImage() {
+            $(".poster").each(function () {
+                var src = $(this).attr("src");
+                if (!src) {
+                    $(this).hide();
+                    $(this).siblings(".eimg").show();
+                }
+                $(this).error(function () {
+                    $(this).hide();
+                    $(this).siblings(".eimg").show();
+                });
+            });
+        }
+
+        //进度条显示
+        function progressbar() {
+            $(".progressbar").each(function (index) {
+                var value = $(this).data("value");
+                $(".progressbar-value").eq(index).width(value);
+            });
+        }
+
+        //节目检索
+        function query() {
+            $(".search input[type='text']").keyup(function () {
+                var value = $(this).val();
+                if (value.length > 0) {
+                    $(".plays-item").each(function () {
+                        var cname = $(this).data("cname");
+                        var ename = $(this).data("ename");
+                        if (cname.toLowerCase().indexOf(value.toLowerCase()) > -1 || ename.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                } else {
+                    $(".plays-item").show();
+                }
+            });
+        }
+
+        //数字转换函数
+        Number.prototype.toPercent = function () {
+            return (Math.round(this * 10000) / 100).toFixed(2) + '%';
+        }
+
+        //日期转换函数
+        Date.prototype.toCustomString = function (format) {
+            var o = {
+                "y+": this.getFullYear(),//年
+                "M+": this.getMonth() + 1,//月
+                "d+": this.getDate(),//日
+                "h+": this.getHours(),//时
+                "m+": this.getMinutes(),//分
+                "s+": this.getSeconds(),//秒
+                "S": this.getMilliseconds()//毫秒
+            };
+            for (var i in o) {
+                if (new RegExp("(" + i + ")").test(format)) {
+                    if (i === "S") {
+                        format = format.replace(RegExp.$1, o[i].toString());
+                    } else {
+                        format = format.replace(RegExp.$1, o[i].toString().substr(o[i].toString().length - RegExp.$1.length));
+                    }
+                }
+            }
+            return format;
+        }
+
+        $(document).ready(function () {
+            var companyId = '@Model.CompanyId';
+            var playTime = '@Html.Raw(Model.PlayTime)';
+            var category = '@Html.Raw(Model.Category)';
+            var url = '@Url.Action("GetPartsPlays", "Tecent")';
+
+            initStyle();
+            pnavsToggle(category);
+            clockToggle();
+            initData(url, companyId, playTime, category, fillData);
+            //windowScroll(url, companyId, playTime, category, fillData);
+            progressbar();
+            errorImage();
+            query();
+        });
+    </script>
+}

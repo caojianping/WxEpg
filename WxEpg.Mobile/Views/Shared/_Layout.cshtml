@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    <link href="~/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/global.css" rel="stylesheet" />
+    <link href="~/Content/button.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <style type="text/css">
+        .menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 9999;
+            display: none;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid lightgray;
+        }
+
+            .menu .mitem {
+                position: relative;
+                z-index: 10000;
+                float: left;
+                width: 28.95%;
+                border-right: 1px solid lightgray;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+                .menu .mitem:first-child {
+                    width: 13.15%;
+                }
+
+                .menu .mitem:last-child {
+                    border-right: none;
+                }
+
+                .menu .mitem a {
+                    display: block;
+                    width: 100%;
+                    height: 47px;
+                    font-size: 1em;
+                    color: #333;
+                    line-height: 47px;
+                    text-align: center;
+                    text-decoration: none;
+                    cursor: pointer;
+                }
+
+                    .menu .mitem a:hover {
+                        background-color: #d9d9d9;
+                    }
+
+                .menu .mitem .fa-user {
+                    font-size: 1.6em;
+                    color: lightgray;
+                }
+
+                .menu .mitem .triangle {
+                    position: absolute;
+                    right: 7px;
+                    bottom: 7px;
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border-top: 5px solid transparent;
+                    border-right: 5px solid #d9d9d9;
+                    border-bottom: 5px solid #d9d9d9;
+                    border-left: 5px solid transparent;
+                }
+
+        .submenu {
+            position: absolute;
+            bottom: 48px;
+            left: 15%;
+            z-index: 10000;
+            display: none;
+            width: 75%;
+            border: 1px solid #ededed;
+            -moz-box-shadow: 0 0 15px #dbdbdb;
+            -webkit-box-shadow: 0 0 15px #dbdbdb;
+            box-shadow: 0 0 15px #dbdbdb;
+        }
+
+            .submenu .sitem {
+                border: 1px solid #ededed;
+            }
+
+                .submenu .sitem:last-child {
+                    border-bottom: none;
+                }
+
+                .submenu .sitem a {
+                    background-color: white;
+                }
+    </style>
+    @RenderSection("styles", required: false)
+
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <ul class="menu clearfix">
+        @if (Session["USER"] == null)
+        {
+            <li class="mitem"><a href="javascript:void(0)"><i class="fa fa-user"></i></a></li>
+        }
+        else
+        {
+            <li class="mitem"><a href="~/Account/Index"><i class="fa fa-user" style="color: dodgerblue;"></i></a></li>
+        }
+        <li class="mitem">
+            <a href="javascript:void(0)">简单查<span class="triangle"></span></a>
+            <ul class="submenu">
+                <li class="sitem"><a href="~/Tecent/Search">搜节目</a></li>
+                <li class="sitem"><a href="~/Tecent/Channel">频道表</a></li>
+            </ul>
+        </li>
+        <li class="mitem">
+            <a href="javascript:void(0)">随心看<span class="triangle"></span></a>
+            <ul class="submenu">
+                <li class="sitem"><a href="~/Tecent/Play?playTime=@DateTime.Now.ToString()">正在播出</a></li>
+                <li class="sitem"><a href="~/Tecent/Favourite">大家爱看</a></li>
+            </ul>
+        </li>
+        <li class="mitem">
+            <a href="javascript:void(0)">动手玩<span class="triangle"></span></a>
+            <ul class="submenu">
+                <li class="sitem"><a href="~/Tecent/Promoter">推广员</a></li>
+                <li class="sitem"><a href="~/Tecent/LeaveMsg">留言板</a></li>
+                <li class="sitem"><a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxdecc0e2486bcdd24&redirect_uri=http://www.epg.org.cn/Act/Index&response_type=code&scope=snsapi_base&state=0#wechat_redirect">活动详情</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript">
+        function menuToggle() {
+            $(document).click(function () {
+                $(".submenu").hide();
+            });
+            $(".submenu").parent().click(function (event) {
+                event.stopPropagation();
+                $(".submenu").not($(this).find(".submenu")).hide();
+                $(this).find(".submenu").toggle();
+            });
+        }
+
+        $(document).ready(function () {
+            menuToggle();
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

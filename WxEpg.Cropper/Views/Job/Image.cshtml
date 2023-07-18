@@ -1,0 +1,393 @@
+﻿@model WxEpg.Cropper.Models.Video
+@{
+    Layout = null;
+    ViewBag.Title = "影视剧裁切";
+    EpgAuth.EpgUser suser = (EpgAuth.EpgUser)Session["USER"];
+    int editId = suser.UserId;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <link href="~/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Plugins/cropper/dist/cropper.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .block {
+            margin-top: 15px;
+            border: 1px solid lightgray;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+        }
+
+            .block .block-head {
+                position: relative;
+            }
+
+                .block .block-head .block-title {
+                    padding: 10px 15px;
+                    font-size: 1.2em;
+                    color: #333;
+                    background-color: #f5f5f5;
+                    border-bottom: 1px solid lightgray;
+                }
+
+            .block .block-body {
+                padding: 10px 15px;
+            }
+
+        .thumbnail {
+            padding: 4px;
+            border: 1px solid lightgray;
+        }
+
+        /*源图片区域样式*/
+        #simgs {
+            padding: 10px;
+        }
+
+            #simgs li {
+                margin-right: 20px;
+                padding: 4px;
+                position: relative;
+                display: block;
+                float: left;
+                border: 1px solid lightgray;
+                -moz-border-radius: 3px;
+                -webkit-border-radius: 3px;
+                border-radius: 3px;
+            }
+
+                #simgs li.current {
+                    border: 1px solid red;
+                }
+
+        .btn-upload {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            padding: 0;
+            color: #00468c;
+            cursor: pointer;
+        }
+
+        .simg {
+            overflow: hidden;
+            cursor: pointer;
+            text-align: center;
+            border: transparent;
+        }
+
+        #simg1 {
+            margin: 40px 20px;
+            width: 160px;
+            height: 120px;
+            line-height: 120px;
+        }
+
+        #simg2 {
+            margin: 20px 40px;
+            width: 120px;
+            height: 160px;
+            line-height: 160px;
+        }
+
+        .real1 {
+            max-width: 160px;
+            max-height: 120px;
+        }
+
+        .real2 {
+            max-width: 120px;
+            max-height: 160px;
+        }
+
+        /*裁切图片区域样式*/
+        #jcropper {
+            display: none;
+        }
+
+        #cropper {
+            border: 1px solid #ddd;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+        }
+
+        .target-container {
+            float: left;
+            width: 450px;
+            height: 450px;
+            margin: 20px;
+            overflow: hidden;
+        }
+
+        #target {
+        }
+
+        .preview-container {
+            float: left;
+            margin: 20px;
+            overflow: hidden;
+        }
+
+        #preview {
+            border: 1px solid transparent;
+        }
+
+        /*图片预览区域样式*/
+        #pimgs {
+            display: none;
+        }
+
+            #pimgs li {
+                padding: 10px;
+                display: none;
+                text-align: center;
+            }
+
+        .description {
+            padding-top: 10px;
+        }
+
+            .description p {
+                text-align: left;
+                padding: 5px 0;
+            }
+
+                .description p b {
+                    margin-left: 20px;
+                    margin-right: 10px;
+                }
+
+        #libs {
+            width: 100%;
+            height: 700px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="clearfix">
+            <a href="javascript:void(0)">
+                @Model.name<small style="font-size: .5em">（@Model.mainType）</small>
+            </a>
+            @Html.Partial("_PartialLogin")
+        </h1>
+    </div>
+
+    <div class="content">
+
+        <!--图片信息-->
+        <div class="block">
+            <header class="block-head">
+                <h2 class="block-title">图片信息</h2>
+            </header>
+            <div class="block-body">
+                <ul class="clearfix" id="simgs">
+                    @foreach (var kv in new Dictionary<int, string>() { { 1, "4:3" }, { 2, "3:4" } })
+                    {
+                        int index = kv.Key - 1;
+                        string file = Model.Id + "_" + kv.Key + ".jpg";
+                        string imgs = string.IsNullOrEmpty(Model.imgs) ? string.Empty : Model.imgs;
+                        List<string> imgList = imgs.Split(',').ToList();
+                        string img = imgList.FirstOrDefault(o => o == file);
+                                         
+                        <li data-index="@(index)">
+                            <i class="btn-upload fa fa-plus-square" title="添加图片"></i>
+                            <div class="simg" id="simg@(kv.Key)">
+                                @if (!string.IsNullOrEmpty(img))
+                                {
+                                    <img class="real real@(kv.Key)" src="http://120.24.242.11:6533/video/Img/@(img)" alt="请添加图片！" />
+                                }
+                                else
+                                {
+                                    <img class="real real@(kv.Key)" src="javascript:void(0)" alt="请添加@(kv.Value)图片！" />
+                                }
+                            </div>
+                        </li>                            
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!--图片裁切-->
+        <ul class="block clearfix" id="jcropper">
+            <li class="target-container thumbnail">
+                <img id="target" src="#" alt="裁切图片" />
+            </li>
+            <li class="preview-container">
+                <div id="preview"></div>
+            </li>
+            <li>
+                <button class="btn btn-primary btn-apply" style="margin-top: 20px;">应用</button>
+            </li>
+        </ul>
+
+        <!--图片预览-->
+        <ul class="block" id="pimgs">
+            @foreach (var kv in new Dictionary<int, string>() { { 1, "4:3" }, { 2, "3:4" } })
+            {
+                <li class="clearfix">
+                    <div class="thumbnail fl">
+                        <img class="pimg" id="pimg@(kv.Key)" src="http://120.24.242.11:6533/video/Img/@(Model.Id)_@(kv.Key).jpg" alt="源图" />
+                    </div>
+                    <div class="description fl">
+                        <p><strong>图片名称：</strong>@(Model.Id)_@(kv.Key).jpg</p>
+                        <p><strong>裁切版本：</strong>@kv.Value</p>
+                        <p><strong>图片尺寸：</strong><span class="size"></span></p>
+                    </div>
+                </li>
+            }
+        </ul>
+
+        <!--图片库-->
+        <div class="block">
+            <header class="block-head">
+                <h2 class="block-title">图片库</h2>
+            </header>
+            <div class="block-body">
+                <iframe id="libs" src="http://image.baidu.com/search/index?tn=baiduimage&ipn=r&ct=201326592&cl=2&lm=-1&st=-1&fm=index&fr=&sf=1&fmq=&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&ie=utf-8&word=@Model.name @Model.mainType"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <iframe id="uploadIframe" src="@Url.Action("Iframe", "Upload")" style="display: none;"></iframe>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Plugins/cropper/dist/cropper.min.js"></script>
+    <script type="text/javascript">
+        var Data = [];
+        var id = "@Model.Id";
+        var flag = 0;
+
+        //填充数据
+        function initData() {
+            for (var i = 0; i < 2; i++) {
+                var fileName = id + "_" + (i + 1) + ".jpg";
+                Data.push({
+                    "file": fileName,
+                    "ratio": (i == 0) ? 1.333 : 0.750,
+                    "src": "/data/" + fileName,
+                    "rect": (i == 0) ?
+                        { "x": 0, "y": 0, "width": 160, "height": 120, "rotate": 0 } : { "x": 0, "y": 0, "width": 120, "height": 160, "rotate": 0 }
+                });
+            }
+        }
+
+        //裁切图片点击事件
+        function toggleImage() {
+            $(".simg").each(function (index) {
+                $(this).click(function () {
+                    $("#jcropper").hide();
+                    $("#pimgs").show();
+                    $("#simgs li.current").removeClass("current");
+                    $("#simgs li").eq(index).addClass("current");
+                    $("#pimgs li").hide();
+                    $("#pimgs li").eq(index).show();
+                    $(".size").eq(index).text($(".pimg").eq(index).width() + "px * " + $(".pimg").eq(index).height() + "px");
+                });
+            });
+        }
+
+        //上传、更新图片
+        function uploadImage() {
+            $(".btn-upload").click(function () {
+                try {
+                    flag = $(this).parent().data().index;
+                    var fileName = Data[flag].file;
+                    $("#uploadIframe")[0].contentWindow.upload(fileName, "callback");
+                } catch (e) {
+                    alert(e);
+                }
+            });
+        }
+
+        //裁切应用
+        function saveImage(url, editId) {
+            $(".btn-apply").click(function () {
+                var index = $("#simgs li.current").data().index;
+                var args = {
+                    "editId": editId,
+                    "videoId": parseInt(id),
+                    "fileName": Data[index].file,
+                    "rect": JSON.stringify(Data[index].rect)
+                };
+                $.post(url, args, function (data) {
+                    if (data) {
+                        if (data.status) {
+                            var src = "http://120.24.242.11:6533/video/Img/" + Data[index].file + "?id=" + new Date().getTime();
+                            $(".real").eq(index).attr("src", src);
+                            $(".pimg").eq(index).attr("src", src);
+                        } else {
+                            alert("保存失败！");
+                        }
+                    }
+                }, "json");
+            });
+        }
+
+        //iframe回调函数     
+        function callback(data) {
+            cropImage(data, flag);
+        }
+
+        //裁切图片
+        function cropImage(data, index) {
+            if (data.status) {
+                var src = "/data/" + data.fileName + "?id=" + new Date().getTime();
+                Data[index].src = src;
+                if (index == 0) {
+                    Data[index].rect = { "x": 0, "y": 0, "width": 160, "height": 120, "rotate": 0 };
+                } else {
+                    Data[index].rect = { "x": 0, "y": 0, "width": 120, "height": 160, "rotate": 0 };
+                }
+
+                $("#pimgs").hide();
+                $("#jcropper").show();
+                $("#simgs li").removeClass("current");
+                $("#simgs li").eq(index).addClass("current");
+
+                var ratio = Data[index].ratio;
+                var rect = Data[index].rect;
+                if (index == 0) {
+                    $("#preview").attr("style", "width:280px;height:210px;");
+                } else {
+                    $("#preview").attr("style", "width:210px;height:280px;");
+                }
+                try {
+                    $("#target").cropper("destroy");
+                    $("#target").attr("src", Data[index].src);
+                    $("#target").cropper({
+                        preview: "#preview",
+                        data: rect
+                    });
+                    $("#target").cropper("setAspectRatio", ratio);
+                    $("#target").on("dragend.cropper", function (e) {
+                        var news = $("#target").cropper("getData");
+                        Data[index].rect = news;
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                alert(data.message);
+            }
+        }
+
+        $(document).ready(function () {
+            var url = '@Url.Action("SaveImage", "Job")';
+            var editId = '@editId';
+            initData();
+            toggleImage();
+            uploadImage();
+            saveImage(url, editId);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+﻿/*头部样式*/
+.header {
+    display: block;
+    margin: auto;
+    width: 100%;
+    background-color: #015fbd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#0166cc), to(#00468c));
+    background: -moz-linear-gradient(top, #0166cc, #00468c);
+    background: -o-linear-gradient(top, #0166cc 0%, #00468c 100%);
+    background: linear-gradient(to bottom, #0166cc 0%, #00468c 100%);
+    border: 1px solid #014384;
+}
+
+    .header h1 {
+        position: relative;
+        margin: auto;
+        width: 980px;
+        font-size: 1em;
+    }
+
+        .header h1 a {
+            display: inline-block;
+            padding: 8px 0;
+            font-size: 1.6em;
+            color: white;
+            text-decoration: none;
+        }
+
+    .header ul {
+        margin: auto;
+        width: 980px;
+    }
+
+        .header ul li {
+            list-style: none;
+        }
+
+            .header ul li a {
+                display: block;
+                padding: 8px 15px;
+                font-size: 1.6em;
+                color: white;
+                text-decoration: none;
+            }
+
+                .header ul li a:hover {
+                    color: aliceblue;
+                    background-color: #014d9c;
+                    background: -webkit-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                    background: -moz-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                    background: -o-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                    background: linear-gradient(to bottom, #0166cd 0%, #013b76 100%);
+                }
+
+                .header ul li a.selected {
+                    color: aliceblue;
+                    background-color: #014d9c;
+                    background: -webkit-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                    background: -moz-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                    background: -o-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                    background: linear-gradient(to bottom, #0166cd 0%, #013b76 100%);
+                }
+
+    .header .user, .header .logout {
+        float: right;
+        margin: 12px 15px 0 0;
+        padding: 5px 0;
+        font-size: 1em;
+        cursor: pointer;
+    }
+
+/*内容样式*/
+.content {
+    margin: auto;
+    margin-top: 15px;
+    width: 980px;
+}
+
+/*搜索框样式*/
+.searchbox {
+    padding: 0 15px;
+    font-size: 1em;
+    border: 2px solid #014384;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+    .searchbox legend {
+        padding: 0 10px;
+        font-size: .875em;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .searchbox ul {
+        padding: 0 15px;
+        font-size: .75em;
+    }
+
+        .searchbox ul li {
+            padding-top: 10px;
+        }
+
+            .searchbox ul li:last-child {
+                padding-top: 0;
+                padding-bottom: 10px;
+                text-align: right;
+            }
+
+/*工具栏样式*/
+.toolbar {
+    padding: 15px 0;
+}
+
+.result {
+    font-size: .875em;
+    font-weight: bold;
+}
+
+.count {
+    margin: 0 5px;
+    font-size: larger;
+    color: orangered;
+}
+
+.toolbar .fa {
+    margin-right: 3px;
+}
+
+/*按钮样式*/
+.btn {
+    display: inline-block;
+    padding: .2em .8em .25em;
+    font-size: .75em;
+    color: #c3def9;
+    text-align: center;
+    vertical-align: baseline;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(0,0,0,.3);
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    background-color: #0158b1;
+    background: -webkit-linear-gradient(top, #0078f2 0%, #00468c 100%);
+    background: -moz-linear-gradient(top, #0078f2 0%, #00468c 100%);
+    background: -o-linear-gradient(top, #0078f2 0%, #00468c 100%);
+    background: linear-gradient(to bottom, #0078f2 0%, #00468c 100%);
+    border: 1px solid #014384;
+    outline: none;
+    cursor: pointer;
+}
+
+    .btn:hover {
+        background-color: #014d9c;
+        background: -webkit-linear-gradient(top, #0166cd 0%, #013b76 100%);
+        background: -moz-linear-gradient(top, #0166cd 0%, #013b76 100%);
+        background: -o-linear-gradient(top, #0166cd 0%, #013b76 100%);
+        background: linear-gradient(to bottom, #0166cd 0%, #013b76 100%);
+    }
+
+    .btn:active {
+        position: relative;
+        top: 1px;
+        color: #5aabfe;
+        background: -webkit-linear-gradient(top, #00468c 0%, #0078f2 100%);
+        background: -moz-linear-gradient(top, #00468c 0%, #0078f2 100%);
+        background: -o-linear-gradient(top, #00468c 0%, #0078f2 100%);
+        background: linear-gradient(to bottom, #00468c 0%, #0078f2 100%);
+    }
+
+/*按钮组样式*/
+.btn-group {
+    display: flex;
+    text-shadow: 0 1px 1px rgba(0,0,0,.3);
+}
+
+    .btn-group .btn {
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+    }
+
+        .btn-group .btn:not(.btn-last) {
+            border-right: none;
+        }
+
+        .btn-group .btn:first-child {
+            -webkit-border-top-left-radius: .5em;
+            border-top-left-radius: .5em;
+            -webkit-border-bottom-left-radius: .5em;
+            border-bottom-left-radius: .5em;
+        }
+
+        .btn-group .btn:last-child {
+            -webkit-border-top-right-radius: .5em;
+            border-top-right-radius: .5em;
+            -webkit-border-bottom-right-radius: .5em;
+            border-bottom-right-radius: .5em;
+        }
+
+        .btn-group .btn:active {
+            position: relative;
+            top: 0;
+        }
+
+/*下拉列表样式*/
+.dropdown {
+    position: relative;
+    z-index: 9999;
+}
+
+    .dropdown .fa {
+        margin: 0;
+        margin-left: 3px;
+    }
+
+    .dropdown .dropdownlist {
+        position: absolute;
+        right: 2px;
+        top: 24px;
+        z-index: 10000;
+        display: none;
+        width: 60%;
+    }
+
+        .dropdown .dropdownlist li {
+            padding: 2px 10px;
+            color: #d9eef7;
+            border: solid 1px #013971;
+            border-top: none;
+            background-color: #0158b1;
+        }
+
+            .dropdown .dropdownlist li:hover {
+                background: #014d9c;
+            }
+
+/*表格样式*/
+.tbl {
+    width: 100%;
+    font-size: 1em;
+}
+
+    .tbl tr {
+        border: 1px solid lightgray;
+    }
+
+    .tbl thead tr {
+        background-color: #e9eaec;
+    }
+
+    .tbl tbody tr {
+    }
+
+        .tbl tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+    .tbl th, .tbl td {
+        padding: 10px 0;
+        font-size: .75em;
+        text-align: center;
+    }
+
+    .tbl tfoot td {
+    }
+
+.nodata {
+    padding: 15px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+}
+
+/*正在加载样式*/
+#loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 10000;
+    display: block;
+    margin-left: -35px;
+    margin-top: -35px;
+    font-size: 3.5em;
+    color: dodgerblue;
+}
+
+/*其它样式*/
+input[type=text], textarea {
+    padding: 2px 5px;
+    color: gray;
+    background-color: white;
+    border: 1px solid lightgray;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border linear .2s, box-shadow linear .2s;
+    -moz-transition: border linear .2s, box-shadow linear .2s;
+    -o-transition: border linear .2s, box-shadow linear .2s;
+    transition: border linear .2s, box-shadow linear .2s;
+}
+
+/*面板样式*/
+.panel {
+    margin-top: 15px;
+    border: 1px solid lightgray;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+    .panel .panel-head {
+    }
+
+        .panel .panel-head .panel-title {
+            padding: 10px 15px;
+            background-color: #f5f5f5;
+            color: black;
+            border-bottom: 1px solid lightgray;
+        }
+
+    .panel .panel-body {
+        padding: 10px 15px;
+    }
+
+.cgray {
+    color: gray;
+}
+
+.cgreen {
+    color: green;
+}
+
+.cred {
+    color: red;
+}

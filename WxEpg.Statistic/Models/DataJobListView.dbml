@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="epg" Class="DataJobListViewDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=172.18.163.2;Initial Catalog=epg;Persist Security Info=True;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="epgConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.JobListView" Member="JobListView">
+    <Type Name="JobListView">
+      <Column Name="id" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="channelid" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="playtime" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="duration" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="eventname" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="programid" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="mainType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="imgs" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="category" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="channelname" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="viagroup" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="weightIndex" Type="System.Decimal" DbType="Decimal(7,3)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

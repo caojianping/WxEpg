@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    @RenderSection("styles", required: false)
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="header">
+        <ul class="clearfix">
+            <li class="fl"><a href="~/Home/TaskLog" @(ViewBag.Title == "任务日志" ? "class=selected" : "")>任务日志</a></li>
+            <li class="fl"><a href="~/Home/TaskStat" @(ViewBag.Title == "任务统计" ? "class=selected" : "")>任务统计</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

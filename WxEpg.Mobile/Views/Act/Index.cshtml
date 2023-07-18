@@ -1,0 +1,103 @@
+﻿@model WxEpg.Mobile.ViewModels.ActivityViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>活动详情</title>
+    <link href="~/Content/global.css" rel="stylesheet" />
+    <style type="text/css">
+        .header {
+            padding: 15px 30px;
+            background-color: dodgerblue;
+            color: white;
+            text-align: center;
+        }
+
+        .list {
+        }
+
+            .list li {
+                padding: 15px;
+            }
+
+                .list li:first-child {
+                    padding-bottom: 0;
+                }
+
+        h3 {
+            padding: 10px 15px;
+            color: orange;
+        }
+
+        #dcode {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="~/Scripts/jwx.helper.js"></script>
+    <script type="text/javascript">
+        var sign = '@Html.Raw(Model.Sign)';
+        wxConfig(sign);
+    </script>
+</head>
+<body>
+    @*<p>测试：ShareId=@Model.ShareId WxId=@Model.WxId isWatch=@Model.IsWatch</p>*@
+    <h1 class="header">免费赢取一年有线费用活动</h1>
+
+    <ul class="list">
+        <li>
+            <b>活动主题：</b>
+            <span id="title">免费赢取一年有线费用活动</span>
+        </li>
+        <li>
+            <b>活动内容：</b>
+            <span id="desc">将该活动的链接转发、分享至您身边的好友，即有机会免费赢取一年的有线费用，心动不如行动，赶紧参与活动中来吧！</span>
+        </li>
+        <li>
+            <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxdecc0e2486bcdd24&redirect_uri=http://www.epg.org.cn/Act/Rank?wxId=@(Model.WxId)&response_type=code&scope=snsapi_base&state=0#wechat_redirect">当前活动排名！</a>
+        </li>
+    </ul>
+
+    @if (Model.IsWatch == false)
+    {
+        <h3>扫描二维码关注公众号，即可参与分享活动，赶快行动吧！！！</h3>
+    }
+    else
+    {
+        <h3>您已经关注过此公众平台，赶紧分享给您身边的好友吧！</h3>
+    }
+    <img id="dcode" src="@Model.DimensionCode" width="220" height="220" />
+
+
+    <script type="text/javascript">
+        function init(wxId, surl, purl) {
+            var data = {
+                title: $("#title").text(),
+                desc: $("#desc").text(),
+                link: surl,
+                imgUrl: 'http://www.epg.org.cn/Images/activity.png',
+                wxId: wxId
+            };
+            wxReady(data, purl);
+        };
+
+        $(function () {
+            var wxId = '@Model.WxId';
+            var surl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxdecc0e2486bcdd24&redirect_uri=" +
+                '@Url.Action("Index", "Act", new RouteValueDictionary() { { "sid", Model.WxId } }, "http", "www.epg.org.cn")' +
+                "&response_type=code&scope=snsapi_base&state=0#wechat_redirect";
+            var purl = '@Url.Action("Init", "Act")';
+
+            init(wxId, surl, purl);
+        });
+    </script>
+</body>
+</html>

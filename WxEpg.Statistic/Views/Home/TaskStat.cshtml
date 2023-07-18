@@ -1,0 +1,60 @@
+﻿@model Dictionary<int, Dictionary<int, int>>
+@{
+    ViewBag.Title = "任务统计";
+    int ysum = 0;
+}
+
+@section styles{
+    <style>
+        .content {
+            margin-top: 30px;
+        }
+
+        .tbl {
+        }
+
+            .tbl th, .tbl td {
+                border: 1px solid lightgray;
+            }
+    </style>
+}
+
+<table class="tbl">
+    <thead>
+        <tr>
+            <th>任务类型</th>
+            <th>未 审 核</th>
+            <th>审核成功</th>
+            <th>审核失败</th>
+            <th>合计</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kv in Model)
+        {
+            var key = kv.Key;
+            var sdics = kv.Value;
+            var xsum = 0;
+            <tr>
+                <td>@(key == 1 ? "一、二级分类" : key == 2 ? "图片" : "基本信息")</td>
+                @foreach (var skv in sdics)
+                {
+                    var cname = skv.Key == 1 ? "cgray" : skv.Key == 2 ? "cgreen" : "cred";
+                    <td class="@cname"><strong>@skv.Value</strong></td>
+                    xsum += skv.Value;
+                }
+                <td><strong>@xsum</strong></td>
+            </tr>
+                ysum += xsum;
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>合计</th>
+            <td class="cgray"><strong>@(Model[1][1] + Model[2][1] + Model[3][1])</strong></td>
+            <td class="cgreen"><strong>@(Model[1][2] + Model[2][2] + Model[3][2])</strong></td>
+            <td class="cred"><strong>@(Model[1][3] + Model[2][3] + Model[3][3])</strong></td>
+            <td style="font-size: .875em"><strong>@ysum</strong></td>
+        </tr>
+    </tfoot>
+</table>

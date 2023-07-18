@@ -1,0 +1,140 @@
+﻿@model WxEpg.Statistic.ViewModels.TaskLogViewModel
+@{
+    ViewBag.Title = "任务日志";
+}
+
+@section styles{
+    <link href="~/Plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <style>
+        .logs {
+            font-size: .875em;
+        }
+
+            .logs li {
+                padding: 10px 0;
+                text-indent: 15px;
+                letter-spacing: 1px;
+                border-bottom: 1px solid lightgray;
+                list-style: decimal-leading-zero inside;
+                -moz-transition: background-color .2s linear;
+                -o-transition: background-color .2s linear;
+                -webkit-transition: background-color .2s linear;
+                transition: background-color .2s linear;
+            }
+
+                .logs li:nth-child(odd) {
+                    background-color: #f9f9f9;
+                }
+
+                .logs li:hover {
+                    background-color: lightskyblue;
+                }
+
+        .cgray {
+            color: gray;
+        }
+
+        .cgreen {
+            color: green;
+        }
+
+        .cred {
+            color: red;
+        }
+    </style>
+}
+
+@using (Html.BeginForm())
+{
+    <fieldset class="searchbox">
+        <legend>任务日志检索 @Model.Parameters.StartTime</legend>
+        <ul>
+            <li>
+                @Html.Label("userName", "用户名称：")
+                @Html.TextBoxFor(o => o.Parameters.UserName, new { id = "userName" })
+            </li>
+            <li>
+                <label>操作时间：</label>
+                @Html.TextBoxFor(o => o.Parameters.StartTime, new
+           {
+               id = "startTime",
+               @Value = String.IsNullOrEmpty(Model.Parameters.StartTime) ?
+               DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") : Model.Parameters.StartTime
+           }) 至 
+                @Html.TextBoxFor(o => o.Parameters.EndTime, new
+           {
+               id = "endTime",
+               @Value = String.IsNullOrEmpty(Model.Parameters.EndTime) ?
+               DateTime.Now.ToString("yyyy-MM-dd") : Model.Parameters.EndTime
+           })
+            </li>
+            <li>
+                <label>日志类型：</label>
+                <input id="editRadio" type="radio" name="Parameters.LogType" value="0"
+                    @(Model.Parameters.LogType == 0 ? "checked" : "") /><label for="editRadio">编辑</label>
+                <input id="auditRadio" type="radio" name="Parameters.LogType" value="1"
+                    @(Model.Parameters.LogType == 1 ? "checked" : "") /><label for="auditRadio">审核</label>
+            </li>
+            <li>
+                <input type="submit" value="检索" />
+            </li>
+        </ul>
+    </fieldset>
+}
+
+@if (Model.Data != null)
+{
+    <div class="toolbar clearfix">
+        <p class="result fl">
+            查询结果：总条目<span class="count" id="totalCount">@Model.Data.Count</span>个，
+            其中一、二级分类<span class="count" id="categoryCount"></span>个，
+            图片<span class="count" id="imageCount"></span>个，
+            基本信息<span class="count" id="infoCount"></span>个
+        </p>
+    </div>
+    if (Model.Data.Count <= 0)
+    {
+    <p class="nodata">暂无数据！</p>
+    }
+    else
+    {
+    <ul class="logs">
+        @foreach (var item in Model.Data)
+        {
+            string taskType = string.Empty;
+            switch (item.TaskType)
+            {
+                case 1:
+                    taskType = "一、二级分类";
+                    break;
+                case 2:
+                    taskType = "图片";
+                    break;
+                case 3:
+                    taskType = "基本信息";
+                    break;
+            }
+            if (Model.Parameters.LogType == 0)
+            {
+            <li data-tasktype="@item.TaskType">您于<span class="cgray">@item.EditTime</span>编辑了<span class="cgreen">@item.VideoName</span><span class="cred">（@taskType）</span>！</li>
+            }
+            else
+            {
+            <li data-tasktype="@item.TaskType">您于<span class="cgray">@item.AuditTime</span>审核了<span class="cgreen">@item.EditName</span>做的<span class="cgreen">@item.VideoName</span><span class="cred">（@taskType）</span>！</li>
+            }
+        }
+    </ul>
+    }
+}
+
+@section scripts{
+    <script src="~/Plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#startTime,#endTime").datetimepicker({ lang: "ch", format: "Y-m-d", timepicker: false });
+            $("#categoryCount").text($('.logs li[data-tasktype="1"]').length);
+            $("#imageCount").text($('.logs li[data-tasktype="2"]').length);
+            $("#infoCount").text($('.logs li[data-tasktype="3]').length);
+        });
+    </script>
+}

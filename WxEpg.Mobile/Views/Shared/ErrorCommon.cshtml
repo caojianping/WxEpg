@@ -1,0 +1,64 @@
+﻿@model WxEpg.Mobile.Controllers.Error
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            color: #31708f;
+            background-color: #d9edf7;
+        }
+
+        #prompt {
+            margin: 0;
+            padding: 20px 0;
+            text-indent: 15px;
+            border-bottom: 1px solid #bce8f1;
+        }
+
+        #msg {
+            margin: 0;
+            padding: 10px 15px;
+            line-height: 30px;
+            text-indent: 30px;
+            letter-spacing: 1px;
+        }
+
+        #url {
+            color: dodgerblue;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2 id="prompt">温馨提示：</h2>
+        <p id="msg">@Model.Msg<span id="down">3</span>秒后系统会自动跳转至<a id="url" href="@Model.Url">指定视图！</a></p>
+    </div>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            var url = '@Model.Url';
+            var down = document.getElementById("down");
+            var i = parseInt(down.innerHTML);
+            var jump = setInterval(jump, 1000);
+
+            function jump() {
+                if (i == 0) {
+                    window.location.href = url;
+                    clearInterval(jump);
+                }
+                document.getElementById("down").innerHTML = i;
+                i--;
+            }
+        };
+    </script>
+</body>
+</html>

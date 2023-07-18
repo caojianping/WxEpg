@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="epg" Class="DataVideoExtendViewDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=172.18.163.2;Initial Catalog=epg;Persist Security Info=True;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="epgConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.VideoExtendView" Member="VideoExtendView">
+    <Type Name="VideoExtendView">
+      <Column Name="videoId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="mainType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="visitCount" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="loveCount" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="discussCount" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="grade" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="updateTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="gradeCount" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

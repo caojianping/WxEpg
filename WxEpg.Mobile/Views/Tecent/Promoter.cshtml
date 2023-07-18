@@ -1,0 +1,90 @@
+﻿@model WxEpg.Mobile.Models.ArgItem
+@{
+    ViewBag.Title = "推广员";
+}
+
+@section styles{
+    <style type="text/css">
+        #expire {
+            color: green;
+            font-size: larger;
+        }
+
+        #create {
+            position: absolute;
+            top: 13px;
+            right: 15px;
+            padding: 5px 10px;
+            -moz-border-radius: .5em;
+            -webkit-border-radius: .5em;
+            border-radius: .5em;
+        }
+
+        #dcode {
+            display: block;
+            margin: 5px auto;
+        }
+
+        table td {
+            font-size: .875em;
+            padding: 10px 0;
+        }
+
+        .portrait {
+            margin-right: 10px;
+            width: 35px;
+            height: 35px;
+            vertical-align: middle;
+        }
+    </style>
+}
+
+<div class="panel">
+    <div class="panel-head">
+        <h2 class="panel-title">
+            <span>有效日期：</span><span id="expire">@Model.expire.ToString("MM/dd")</span>
+            <button class="btn btn-gray" id="create">生成二维码</button>
+        </h2>
+    </div>
+    <div class="panel-body">
+        <img id="dcode" src="@Model.imgurl" width="220" height="220" />
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-head">
+        <h2 class="panel-title">关注用户</h2>
+    </div>
+    <div class="panel-body">
+        <table>
+            <tbody>
+                @foreach (var item in Model.Users)
+                {
+                    <tr>
+                        <td>
+                            <img class="portrait" src="@item.head" alt="@item.username" />@(string.IsNullOrEmpty(item.username) ? "匿名" : item.username)
+                        </td>
+                        <td class="tright">@item.addtime.ToString("yy年MM月dd日 hh时mm分")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function createDCode(id, url) {
+            $("#create").click(function () {
+                $.getJSON(url, { id: id }, function (data) {
+                    $("#expire").text(data.expire);
+                    $("#dcode").attr("src", data.imgurl);
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            createDCode('@Model.id', '@Url.Action("CreateDimensionCode", "Tecent")');
+        });
+    </script>
+}

@@ -1,0 +1,189 @@
+﻿@model WxEpg.Mobile.ViewModels.EventModel
+@{
+    ViewBag.Title = Model.ChannelName + "(" + Model.PlayDate.ToString("MM/dd") + ")";
+}
+
+@section styles{
+    <style type="text/css">
+        .enavs {
+            height: 45px;
+        }
+
+            .enavs li {
+                float: left;
+                height: 45px;
+                border-right: 1px solid lightgray;
+            }
+
+                .enavs li:last-child {
+                    border-right: none;
+                }
+
+                .enavs li a {
+                    display: block;
+                    width: 100%;
+                    height: 45px;
+                    font-size: .875em;
+                    line-height: 45px;
+                    text-align: center;
+                    color: black;
+                }
+
+                    .enavs li a.today {
+                        color: orangered;
+                    }
+
+                    .enavs li a:hover {
+                        color: deepskyblue;
+                    }
+
+                    .enavs li a.active {
+                        height: 43px;
+                        line-height: 43px;
+                        color: deepskyblue;
+                        border-bottom: 2px solid deepskyblue;
+                    }
+
+        #events {
+            margin: 46px 0 48px 0;
+            background-color: white;
+        }
+
+        .played, .playing, .play {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 40px;
+            font-size: .875em;
+            line-height: 40px;
+        }
+
+        .played {
+            color: darkgray;
+        }
+
+        .playing {
+            color: orangered;
+        }
+
+        .play {
+            color: black;
+        }
+
+            /*灰线*/
+            .played:before, .playing:before, .play:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 80px;
+                z-index: 99;
+                width: 0;
+                height: 40px;
+                border-left: 1px solid darkgray;
+            }
+
+            /*圆圈*/
+            .played:after, .playing:after, .play:after {
+                content: "";
+                position: absolute;
+                top: 18px;
+                left: 77px;
+                z-index: 100;
+                width: 5px;
+                height: 5px;
+                -moz-border-radius: 6px;
+                -webkit-border-radius: 6px;
+                border-radius: 6px;
+                background-color: white;
+            }
+
+        .played:after {
+            border: 1px solid darkgray;
+        }
+
+        .playing:after {
+            border: 1px solid orangered;
+        }
+
+        .play:after {
+            border: 1px solid black;
+        }
+
+        .time {
+            margin-left: 15px;
+        }
+
+        .ename {
+            margin-left: 70px;
+        }
+
+        .played .hasvideo {
+            border-bottom: 1px solid darkgray;
+        }
+
+        .playing .hasvideo {
+            border-bottom: 1px solid orangered;
+        }
+
+        .play .hasvideo {
+            border-bottom: 1px solid black;
+        }
+    </style>
+}
+
+<div class="header">
+    <ul class="enavs clearfix">
+        @foreach (var item in Model.ShowDates)
+        {
+            string cname = (item.Date == DateTime.Today ? "today " : "") + (Model.PlayDate == item.Date ? "active" : "");
+            string date = item.Date == DateTime.Today ? "今天" : item.ToString("MM/dd");
+            <li>
+                <a class="@cname" href="/Tecent/Event?channelId=@Model.ChannelId&playDate=@item.ToString("yyyy-MM-dd")">@date</a>
+            </li>
+        }
+    </ul>
+</div>
+
+<ul id="events">
+    @foreach (var item in Model.Data)
+    {
+        string play = "play";
+        if (item.playtime.Date == DateTime.Now.Date && item.playtime < DateTime.Now)
+        {
+            play = (item.IsPlaying) ? "playing" : "played";
+        }
+        string url = item.programid < 0 ? "javascript:void(0)" : "/Video/Index?id=" + item.programid;
+        //string url = "javascript:void(0)";
+        string video = item.programid < 0 ? "" : "hasvideo";
+        <li>
+            <a class="@play" href="@url">
+                <span class="time">@item.playtime.ToString("HH:mm")</span><span class="ename @video">@item.eventname</span>
+            </a>
+        </li>  
+    }
+</ul>
+
+@section scripts{
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="~/Scripts/jwx.helper.js"></script>
+    <script type="text/javascript">
+        wxConfig('@Html.Raw(Model.Sign)');        
+    </script>
+
+    <script type="text/javascript">
+        function initStyle() {
+            var w = $(".enavs").outerWidth();
+            var m = $(".enavs li").length;
+            $(".enavs li").outerWidth(parseFloat(w / m));
+        }
+
+        $(document).ready(function () {
+            var title = '@Html.Raw(ViewBag.Title)';
+            var data = { title: title, desc: title + "节目单数据。", link: window.location.href };
+            var url = '@Url.Action("AddShareMsg", "Base")';
+
+            wxReady(data, url);
+            initStyle();
+        });
+    </script>
+}

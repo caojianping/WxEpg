@@ -1,0 +1,45 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Iframe</title>
+</head>
+<body>
+    <form id="uploadForm" action="@Url.Action("Files", "Upload")" method="post" enctype="multipart/form-data">
+        <input id="fileName" type="hidden" name="fileName" />
+        <input id="callback" type="hidden" name="callback" />
+        <input id="uploadFile" type="file" name="uploadFile" />
+    </form>
+
+    <script type="text/javascript">
+        callback('@Html.Raw(ViewBag.Data)');
+
+        function upload(fileName, callback) {
+            var file = document.getElementById("uploadFile");
+            file.click();
+            file.onchange = function () {
+                submit(fileName, callback);
+            }
+        }
+
+        function submit(fileName, callback) {
+            document.getElementById("fileName").value = fileName;
+            document.getElementById("callback").value = callback;
+            document.getElementById("uploadForm").submit();
+        }
+
+        function callback(data) {
+            window.onload = function () {
+                if (!data) return;
+                data = JSON.parse(data);
+                window.parent[data.callback](data);
+            }
+        }
+    </script>
+</body>
+</html>

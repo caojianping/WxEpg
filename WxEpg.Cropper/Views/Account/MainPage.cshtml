@@ -1,0 +1,158 @@
+﻿@using WxEpg.Cropper
+@{
+    ViewBag.Title = "管理导航";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <link href="~/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .welcome {
+            padding: 15px 0;
+            font-size: 1.6em;
+            text-align: center;
+        }
+
+        .nav {
+            margin: 15px;
+        }
+
+            .nav li {
+                border-bottom: 1px solid lightgray;
+            }
+
+                .nav li a {
+                    display: block;
+                    padding: 20px 0;
+                    width: 100%;
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    color: #333;
+                    text-decoration: none;
+                    text-indent: 5px;
+                    cursor: pointer;
+                    background: white;
+                    -moz-transition: all .25s linear;
+                    -o-transition: all .25s linear;
+                    -webkit-transition: all .25s linear;
+                    transition: all .25s linear;
+                }
+
+                    .nav li a:hover {
+                        color: white;
+                        background: -webkit-linear-gradient(left,seagreen 20%, #43CD80 60%, seagreen 100%);
+                        background: -moz-linear-gradient(left,seagreen 20%, #43CD80 50%, seagreen 100%);
+                        background: -o-linear-gradient(left,seagreen 20%, #43CD80 50%, seagreen 100%);
+                        background: linear-gradient(to right,seagreen 20%, #43CD80 50%, seagreen 100%);
+                    }
+
+                        .nav li a:hover small {
+                            font-size: .875em;
+                            color: #333;
+                        }
+
+                .nav li small {
+                    padding-left: 30px;
+                    font-size: .75em;
+                    color: #999;
+                    letter-spacing: 1px;
+                }
+
+                .nav li .fa {
+                    margin-right: 15px;
+                    font-size: 1.2em;
+                }
+    </style>
+</head>
+<body>
+
+    @if (Session["USER"] != null)
+    {
+        var suser = (EpgAuth.EpgUser)Session["USER"];
+        <div class="header">
+            <h1 class="clearfix">
+                <a href="~/Job/MainPage">微信节目单后台管理</a>
+                @Html.Partial("_PartialLogin")
+            </h1>
+        </div>
+    
+        <div class="content">
+            <h2 class="welcome">@suser.UserName <i><small>（@suser.RoleName）</small></i>，欢迎您的到来！</h2>
+            <ul class="nav">
+                @switch (suser.RoleName)
+                {
+                    case "管理员":
+                    <li>
+                        <a href="~/Job/JobList" target="_blank">
+                            <i class="fa fa-tasks"></i>任务管理
+                        <small>提供节目单数据的检索、影视剧分类的设置、影视剧图片的编辑等功能……</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.epg.org.cn:6533/centerserver/Channel/Index?key=@EpgAuth.EncryptAndDecrypt.Encrypt(suser.UserName)" target="_blank">
+                            <i class="fa fa-list-alt"></i>频道管理
+                        <small>提供标准频道数据、运营商数据及用户频道数据的导入、编辑、删除等功能……</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.epg.org.cn:6533/AuditImgSrv?key=@EpgAuth.EncryptAndDecrypt.Encrypt(suser.UserName)" target="_blank">
+                            <i class="fa fa-search-plus"></i>图片审核
+                        <small>提供影视剧数据的检索、审核等功能……</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.epg.org.cn/wxcallback/main/man" target="_blank">
+                            <i class="fa fa-rss"></i>微信推广
+                        <small>提供微信后台管理等功能……</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.epg.org.cn:6533/NetResource/Home/Index?key=@EpgAuth.EncryptAndDecrypt.Encrypt(suser.UserName)" target="_blank">
+                            <i class="fa fa-list-alt"></i>平台链接
+                        <small>提供微博、贴吧、文章的添加、更新等功能……</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.epg.org.cn:6533/Statistic/" target="_blank">
+                            <i class="fa fa-calculator"></i>任务统计
+                        <small>提供任务信息统计、任务日志等功能……</small>
+                        </a>
+                    </li>
+                        break;
+
+                    case "编辑":            
+                    <li>
+                        <a href="~/Job/JobList" target="_blank">
+                            <i class="fa fa-tasks"></i>任务管理
+                        <small>提供节目单数据的检索、影视剧分类的设置、影视剧图片的编辑等功能……</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.epg.org.cn:6533/NetResource/Home/Index?key=@EpgAuth.EncryptAndDecrypt.Encrypt(suser.UserName)" target="_blank">
+                            <i class="fa fa-list-alt"></i>平台链接
+                        <small>提供微博、贴吧、文章的添加、更新等功能……</small>
+                        </a>
+                    </li>          
+                        break;
+
+                    case "审核":
+                    <li>
+                        <a href="http://www.epg.org.cn:6533/AuditImgSrv?key=@EpgAuth.EncryptAndDecrypt.Encrypt(suser.UserName)" target="_blank">
+                            <i class="fa fa-search-plus"></i>审核
+                        <small>提供影视剧数据的检索、审核等功能……</small>
+                        </a>
+                    </li>
+                        break;
+                }
+            </ul>
+        </div>    
+    }
+</body>
+</html>

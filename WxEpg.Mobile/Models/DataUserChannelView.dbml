@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="epg" Class="DataUserChannelViewDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=172.18.163.2;Initial Catalog=epg;Persist Security Info=True;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="epgConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.UserChannelView" Member="UserChannelView">
+    <Type Name="UserChannelView">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="channelId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="channelName" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="stationNumber" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="companyId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Weight" Type="System.Decimal" DbType="Decimal(7,1)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

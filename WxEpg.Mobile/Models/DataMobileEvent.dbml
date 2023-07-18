@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="epg" Class="DataMobileEventDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=172.18.163.2;Initial Catalog=epg;Persist Security Info=True;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="epgConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.MobileEvent" Member="MobileEvent">
+    <Type Name="MobileEvent">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="channelid" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="playtime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="duration" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="eventname" Type="System.String" DbType="VarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="programid" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Function Name="dbo.sp_queryevent" Method="sp_queryevent">
+    <Parameter Name="name" Type="System.String" DbType="VarChar(50)" />
+    <ElementType Name="sp_queryeventResult">
+      <Column Name="VideoId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="MainType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_getplays" Method="sp_getplays">
+    <Parameter Name="companyId" Type="System.Int32" DbType="Int" />
+    <Parameter Name="playTime" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="category" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="cid" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="count" Type="System.Int32" DbType="Int" />
+    <ElementType Name="sp_getplaysResult">
+      <Column Name="channelid" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="playtime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="eventname" Type="System.String" DbType="VarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="duration" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="programid" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="mainType" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="category" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="hasplay" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="channelName" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="LoveCount" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CommentCount" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Weight" Type="System.Decimal" DbType="Decimal(7,1)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+</Database>

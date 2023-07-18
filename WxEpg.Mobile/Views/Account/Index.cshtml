@@ -1,0 +1,278 @@
+﻿@model WxEpg.Mobile.Models.UsersCompanyView
+@{
+    ViewBag.Title = "用户设置";
+}
+
+@section styles{
+    <style type="text/css">
+        .setting li {
+            position: relative;
+            padding: 15px 0;
+            border-bottom: 1px solid lightgray;
+        }
+
+            .setting li:last-child {
+                border-bottom: none;
+            }
+
+            .setting li input {
+                width: 120px;
+                color: #999;
+                text-align: right;
+                background-color: none;
+                border: none;
+                outline: none;
+            }
+
+        #marker {
+            padding: 0 5px;
+            font-size: 1.2em;
+            color: lightseagreen;
+            cursor: pointer;
+        }
+
+        #location {
+            color: #999;
+        }
+
+        #search {
+            padding: .4em .8em;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #save {
+            display: block;
+            margin: 45px auto 65px;
+            padding: 10px 0;
+            width: 92%;
+            font-size: 1.2em;
+            -moz-border-radius: .4em;
+            -webkit-border-radius: .4em;
+            border-radius: .4em;
+        }
+    </style>
+}
+
+@using (Html.BeginForm("Index", "Account", FormMethod.Post))
+{
+    <div class="panel">
+        <header class="panel-head">
+            <h2 class="panel-title">用户设置</h2>
+        </header>
+        <div class="panel-body">
+            <ul class="setting">
+                <li class="tright">
+                    <label class="panel-left" style="top: 40px;">头像</label>
+                    <img class="tcenter" src="@Model.head" alt="@Model.username" width="75" height="75" /></li>
+                <li>
+                    <label>昵称</label>
+                    <input class="panel-right" type="text" name="userName" placeholder="输入用户昵称" maxlength="12" value="@Model.username" />
+                </li>
+                <li>
+                    <label>手机号</label>
+                    <input class="panel-right" type="text" name="phone" placeholder="输入手机号码" maxlength="11" value="@Model.phone" />
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="panel">
+        <header class="panel-head">
+            <h2 class="panel-title">绑定运营商</h2>
+        </header>
+        <div class="panel-body">
+            <ul class="setting lselect">
+                <li>
+                    <label><i class="fa fa-map-marker" id="marker"></i><small id="location"></small></label>
+                    <a class="panel-right btn btn-gray btn-sm" id="search" href="javascript:void(0)">自动搜索</a>
+                </li>
+                <li>
+                    <label for="province">省份</label>
+                    <select class="panel-right lselect-first" id="province"
+                    data-source="@(!string.IsNullOrEmpty(Model.province) ? Model.province : Model.UserProvince)">
+                    </select>
+                </li>
+                <li>
+                    <label for="city">城市</label>
+                    <select class="panel-right lselect-second" id="city"
+                    data-source="@(!string.IsNullOrEmpty(Model.city) ? Model.city : Model.UserCity)">
+                    </select>
+                </li>
+                <li>
+                    <label for="companyId">运营商</label>
+                    <select class="panel-right" id="companyId" name="companyId"></select>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <input class="btn btn-gray" id="save" type="submit" value="保存" />
+}
+
+@section scripts{
+    <script src="~/Plugins/linkselect/linkselect.2level.js"></script>
+    <script type="text/javascript">
+        var LocationData = new Object();
+
+        //初始化消息
+        function initMsg(msg) {
+            if (!msg) return;
+            alert(msg);
+        }
+
+        //获取省、市列表
+        function getCityData(url) {
+            $.getJSON(url, function (idata) {
+                $(".lselect").lselect({
+                    data: idata,
+                    firstTitle: "请选择省",
+                    secondTitle: "请选择市",
+                });
+                var province = $("#province").val();
+                var city = $("#city").val();
+                $.getJSON("/Account/getCompanyDictionaryByLocation", { province: province, city: city }, function (jdata) {
+                    if (jdata) {
+                        var $companId = $("#companyId");
+                        $companId.empty().append('<option value="-1">请选择运营商</option>');
+                        var options = '';
+                        for (var i in jdata) {
+                            var option = '<option value="' + i + '">' + jdata[i] + '</option>';
+                            options += option;
+                        }
+                        $companId.append(option);
+                        var companyId = '@Model.companyid';
+                        if (companyId) {
+                            $companId.val(companyId);
+                        }
+                    }
+                });
+            });
+        }
+
+        //获取地理位置
+        function getLocation() {
+            var options = {
+                enableHighAccuracy: true,
+                maximumAge: 1000
+            };
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+            }
+            else {
+                alert("该浏览器不支持获取地理位置。");
+            }
+        }
+
+        function onSuccess(position) {
+            var longitude = position.coords.longitude;//经度
+            var latitude = position.coords.latitude;//纬度                       
+
+            var url = 'http://api.map.baidu.com/geocoder/v2/?ak=71709218d45a706b9c7e3abc2f037b23&callback=?&location=' +
+                latitude + ',' + longitude + '&output=json&pois=1';
+            $.getJSON(url, function (data) {
+                //addressComponent{city: "广州市", district: "天河区", province: "广东省", street: "广州大道", street_number: "922号"}
+                var address = data.result.addressComponent;
+                var p = address.province == undefined ? "" : address.province;
+                var c = address.city == undefined ? "" : address.city;
+                var d = address.district == undefined ? "" : address.district;
+                var s = address.street == undefined ? "" : address.street;
+                var txt = p + c + d + s;
+                $("#location").text(txt);
+
+                LocationData["province"] = (address.province == undefined) ? "" : address.province;
+                LocationData["city"] = (address.city == undefined) ? "" : address.city;
+            });
+        }
+
+        function onError(error) {
+            var result = "";
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    result = "用户拒绝对获取地理位置的请求。"
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    result = "位置信息是不可用的。"
+                    break;
+                case error.TIMEOUT:
+                    result = "请求用户地理位置超时。"
+                    break;
+                case error.UNKNOWN_ERROR:
+                    result = "未知错误。"
+                    break;
+            }
+            alert(result);
+            var province = $("#province").val();
+            var city = $("#city").val();
+            getCompanyDictionaryByLocation(province, city);
+        }
+
+        //根据当前位置搜索运营商
+        function autoSearch() {
+            $("#search").click(function () {
+                if (!LocationData["province"]) return;
+                var province = LocationData["province"];
+                $("#province option").each(function (index) {
+                    var t = $(this).html();
+                    if (province.indexOf(t) > -1) {
+                        $("#province").val(t).change();
+                        return false;
+                    }
+                });
+
+                if (!LocationData["city"]) return;
+                var city = LocationData["city"];
+                $("#city option").each(function (index) {
+                    var t = $(this).html();
+                    if (city.indexOf(t) > -1) {
+                        $("#city").val(t).change();
+                        return false;
+                    }
+                });
+
+                getCompanyDictionaryByLocation($("#province").val(), $("#city").val());
+            });
+        }
+
+        //根据省、市搜索运营商列表
+        function cityChange(url) {
+            $("#city").on("change", function () {
+                var province = $("#province").val();
+                var city = $("#city").val();
+                if (province && city) {
+                    getCompanyDictionaryByLocation(province, city);
+                }
+            });
+        }
+
+        //根据地理位置获取运营商集合
+        function getCompanyDictionaryByLocation(province, city) {
+            $.getJSON("/Account/getCompanyDictionaryByLocation", { province: province, city: city }, function (data) {
+                console.log("getCompanyDictionaryByLocation data:", data);
+                if (data) {
+                    var $companyId = $("#companyId");
+                    $companyId.empty().append('<option value="-1">请选择运营商</option>');
+                    var options = '';
+                    for (var i in data) {
+                        var option = '<option value="' + i + '">' + data[i] + '</option>';
+                        options += option;
+                    }
+                    $companyId.append(options);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var msg = '@TempData["Message"]';
+            var url = '@Url.Action("GetCityData", "Account")';
+
+            initMsg(msg);
+            getCityData(url);
+            getLocation();
+            cityChange();
+            autoSearch();
+        });
+    </script>
+}

@@ -1,0 +1,174 @@
+﻿@model Dictionary<string, string>
+@{
+    Layout = null;
+    EpgAuth.EpgUser suser = (EpgAuth.EpgUser)Session["USER"];
+    int editId = suser.UserId;
+    string[] mtypes = new string[3] { "电影", "电视剧", "栏目" };
+    string[] stypes = new string[12] { "新闻", "电视剧", "电影", "娱乐", "少儿", "体育", "财经", "生活", "科教", "纪录", "电视购物", "其它" };
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>基本信息编辑</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <style type="text/css">
+        .block {
+            margin: 15px auto;
+            border: 1px solid transparent;
+        }
+
+            .block .block-head {
+                padding: 5px 0;
+            }
+
+                .block .block-head .block-title {
+                    position: relative;
+                    font-size: 1.4em;
+                    text-indent: 10px;
+                    border-left: 15px solid dodgerblue;
+                }
+
+            .block .block-body {
+                padding: 10px 30px;
+                font-size: .875em;
+            }
+
+        button {
+            position: absolute;
+            right: 40px;
+            top: 5px;
+        }
+
+        ul {
+        }
+
+            ul li {
+                padding: 8px 0;
+                border-bottom: 1px solid lightgray;
+            }
+
+                ul li label {
+                    display: inline-block;
+                    width: 100px;
+                    text-indent: 10px;
+                    background: linear-gradient(center bottom, #DDD 0%, #FAFAFA 100%);
+                    background: -moz-linear-gradient(center bottom, #DDD 0%, #FAFAFA 100%);
+                    background: -webkit-linear-gradient(center bottom, #DDD 0%, #FAFAFA 100%);
+                    background: -o-linear-gradient(center bottom, #DDD 0%, #FAFAFA 100%);
+                }
+
+                ul li input[type=text] {
+                    padding: 8px;
+                }
+
+                ul li textarea {
+                    display: block;
+                    margin: auto;
+                    width: 95%;
+                }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="clearfix">
+            <a href="~/Job/Basic?videoId=@ViewBag.VideoId&videoName=@ViewBag.VideoName&mainType=@ViewBag.MainType">
+                @ViewBag.VideoName<small style="font-size: .5em">（@ViewBag.MainType）</small>
+            </a>
+            @Html.Partial("_PartialLogin")
+        </h1>
+    </div>
+
+    <div class="content">
+        @using (Html.BeginForm("Basic", "Job", new
+        {
+            editId = editId,
+            videoId = ViewBag.VideoId,
+            videoName = ViewBag.VideoName,
+            mainType = ViewBag.MainType
+        }, FormMethod.Post, new { id = "basicForm" }))
+        {
+            var introduce = Model.FirstOrDefault(o => o.Key == "介绍");
+            <div class="block">
+                <header class="block-head">
+                    <h2 class="block-title">基本信息编辑
+                        <button>保存</button></h2>
+                </header>
+                <div class="block-body">
+                    <ul>
+                        @foreach (var kv in Model.Where(o => o.Key != "介绍"))
+                        {
+                            switch (kv.Key)
+                            {
+                                case "一级分类":
+                            <li>
+                                <label>@kv.Key</label>
+                                <select name="@kv.Key">
+                                    <option value="">请选择一级分类</option>
+                                    @foreach (string mtype in mtypes)
+                                    {
+                                        <option value="@mtype" @(kv.Value == mtype ? "selected=selected" : "")>@mtype</option>
+                                    }
+                                </select>
+                            </li>
+                                    break;
+
+                                case "二级分类":
+                            <li>
+                                <label>@kv.Key</label>
+                                <select name="@kv.Key">
+                                    <option value="">请选择二级分类</option>
+                                    @foreach (string stype in stypes)
+                                    {
+                                        <option value="@stype" @(kv.Value == stype ? "selected=selected" : "")>@stype</option>
+                                    }
+                                </select>
+                            </li>
+                                    break;
+
+                                default:
+                            <li>
+                                <label>@kv.Key</label>
+                                <input type="text" name="@kv.Key" value="@kv.Value" />
+                            </li>
+                                    break;
+                            }
+                        }
+                        <li>
+                            <label>@introduce.Key</label>
+                        </li>
+                        <li>
+                            <textarea name="@introduce.Key" rows="12">@introduce.Value</textarea>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        }
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript">
+        function initMsg(msg) {
+            if (!msg) return;
+            alert(msg);
+        }
+
+        function init() {
+            $("input[type='text']").each(function () {
+                var li = $(this).parents("li");
+                $(this).outerWidth(li.innerWidth() - 110);
+            });
+        }
+
+        $(function () {
+            var msg = '@ViewBag.Message';
+            initMsg(msg);
+            init();
+        });
+    </script>
+</body>
+</html>

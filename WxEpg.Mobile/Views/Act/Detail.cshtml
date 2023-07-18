@@ -1,0 +1,58 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>活动详情</title>
+    <link href="~/Content/global.css" rel="stylesheet" />
+    <style type="text/css">
+        h1 {
+            padding: 15px 30px;
+            background-color: dodgerblue;
+            color: white;
+            text-align: center;
+        }
+
+        ul {
+        }
+
+            ul li {
+                padding: 15px;
+            }
+
+                ul li:first-child {
+                    padding-bottom: 0;
+                }
+
+        h3 {
+            padding: 10px 15px;
+            color: orange;
+        }
+
+        img {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>免费赢取一年有线费用活动</h1>
+    <ul>
+        <li><b>活动主题：</b>免费赢取一年有线费用活动</li>
+        <li><b>活动内容：</b>创建以上活动链接的分享并转发、分享至身边的好友，即有机会免费赢取一年的有线费用……</li>
+    </ul>
+    @if (ViewBag.IsWatch == false)
+    {
+        <h3>扫描以下二维码关注公众号，即可参与以上活动，赶快行动吧！！！</h3>
+        <img src="@ViewBag.DimensionCode" width="220" height="220" />   
+    }
+    else
+    {
+        <h3>您已经关注过此公众平台，赶紧去创建您的 @Html.ActionLink("分享", "Create", "Act")吧！</h3>
+    }
+</body>
+</html>

@@ -1,0 +1,124 @@
+﻿@model WxEpg.Mobile.ViewModels.RankViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>活动排名</title>
+    <link href="~/Content/global.css" rel="stylesheet" />
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-image: url(../Images/bg.jpg);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            background-attachment: fixed;
+        }
+
+        .title {
+            padding: 10px 0;
+            font-size: 1.6em;
+            color: white;
+            text-align: center;
+        }
+
+            .title .gift {
+                display: inline-block;
+                margin-right: 2px;
+                width: 35px;
+                height: 35px;
+                vertical-align: top;
+                background-image: url(../Images/gift.png);
+                background-repeat: no-repeat;
+                background-position: center center;
+            }
+
+        .info {
+            padding: 8px 0;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 1.2em;
+            color: white;
+            text-align: center;
+            background-image: url(../Images/dot.png);
+            background-repeat: repeat;
+        }
+
+            .info a {
+                color: dodgerblue;
+            }
+
+            .info .trumpet {
+                display: inline-block;
+                margin-right: 2px;
+                width: 28px;
+                height: 28px;
+                vertical-align: top;
+                background-image: url(../Images/trumpet.png);
+                background-repeat: no-repeat;
+                background-position: center center;
+            }
+
+            .info .rank {
+                color: red;
+            }
+
+        .list {
+            margin: 15px auto;
+            width: 90%;
+            font-size: 1em;
+        }
+
+            .list li {
+                margin-bottom: 3px;
+                padding: 5px 0;
+                color: white;
+                background-image: url(../Images/dot.png);
+                background-repeat: repeat;
+            }
+
+                .list li span {
+                    display: inline-block;
+                    width: 33.3%;
+                    font-size: 1.2em;
+                    text-align: center;
+                }
+    </style>
+</head>
+<body>
+    @*<p>测试：wxid=@Model.WxId name=@Model.Name rank=@Model.Rank</p>*@
+    <h1 class="title"><span class="gift"></span>免费赢取一年有线费用活动</h1>
+    @if (Model.Rank == 0)
+    {
+        <p class="info">您还没有参与这次活动哦！赶紧去<a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxdecc0e2486bcdd24&redirect_uri=http://www.epg.org.cn/Act/Index&response_type=code&scope=snsapi_base&state=0#wechat_redirect">参与</a>吧！</p>
+    }
+    else
+    {
+        <p class="info"><span class="trumpet"></span>@Model.Name，您当前的排名 <span class="rank">@(Model.Rank)</span></p>
+    }
+
+    <ul class="list">
+        <li>
+            <span>排名</span><span>微信名</span><span>分享数</span>
+        </li>
+        @{
+            int i = 1;
+            foreach (var item in Model.Data)
+            {
+            <li>
+                <span>@i</span><span>@item.Key</span><span>@item.Value</span>
+            </li>
+                i++;
+            }
+        }
+    </ul>
+</body>
+</html>

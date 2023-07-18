@@ -1,0 +1,94 @@
+﻿@model Dictionary<string, Dictionary<string, int>>
+@{
+    ViewBag.Title = "搜节目";
+}
+
+@section styles{
+    <style type="text/css">
+        .header {
+            background-color: #0066bb;
+            border: none;
+        }
+
+        .search {
+            border: 1px solid lightblue;
+        }
+
+            .search input[type=text] {
+                left: 10px;
+            }
+
+            .search .fa-search {
+                right: 10px;
+            }
+
+                .search .fa-search:hover {
+                    color: #006ebb;
+                }
+
+        dl {
+            margin: 55px 0 48px 0;
+            padding: 15px;
+            background-color: white;
+        }
+
+            dl dt {
+                font-weight: bold;
+            }
+
+            dl dd {
+                padding: 5px 0;
+                font-size: .875em;
+                text-indent: 15px;
+            }
+
+            dl dd, dl a {
+                color: #0066bb;
+            }
+    </style>
+}
+
+<div class="header">
+    @using (Html.BeginForm("Search", "Tecent", FormMethod.Post, new { id = "eventForm" }))
+    {
+        <div class="search">
+            <input type="text" name="name" placeholder="节目检索" />
+            <i class="fa fa-search"></i>
+        </div>
+    }
+</div>
+
+@if (Model != null)
+{
+    <dl>
+        @foreach (var kv in Model)
+        {
+            <dt>@kv.Key</dt>
+            foreach (var item in kv.Value)
+            {
+                if (item.Value != -1)
+                {
+            <dd><a href="~/Video/Index?id=@item.Value">@item.Key</a></dd>        
+                }
+                else
+                {
+            <dd data-videoid="@item.Value">@item.Key</dd> 
+                }
+            }
+        }
+    </dl>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        function query() {
+            $(".search .fa-search").click(function () {
+                $("#eventForm").submit();
+            });
+        }
+
+        $(document).ready(function () {
+            query();
+        });
+    </script>
+}

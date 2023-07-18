@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataLeaveMsgView">
+  <DataContextMoniker Name="/DataLeaveMsgViewDataContext" />
+  <nestedChildShapes>
+    <classShape Id="da57c819-a5ae-443a-8fcb-f8e750b4b4a4" absoluteBounds="2.75, 1.625, 2, 2.1446048990885416">
+      <DataClassMoniker Name="/DataLeaveMsgViewDataContext/LeaveMsgView" />
+      <nestedChildShapes>
+        <elementListCompartment Id="738c2fa1-e625-4fd5-9f14-a03cff64e7c0" absoluteBounds="2.765, 2.085, 1.9700000000000002, 1.5846048990885415" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

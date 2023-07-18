@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="epg" Class="DataTaskLogDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=172.18.163.2;Initial Catalog=epg;Persist Security Info=True;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="epgConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.TaskLog" Member="TaskLog">
+    <Type Name="TaskLog">
+      <Column Name="VideoId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TaskType" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="EditId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EditTime" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="AuditId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="AuditTime" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Step" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EditName" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="AuditName" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="VideoName" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

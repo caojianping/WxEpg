@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/global.css" rel="stylesheet" />
+    <link href="~/Content/share.css" rel="stylesheet" />
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    @RenderBody()
+
+    <div class="share-container">
+        <p class="share-prompt">点击右上角分享…</p>
+        <a class="s-xguide-down trans" href="javascript:void(0);"></a>
+        <a class="s-xguide-down arrow-1 trans" href="javascript:void(0);"></a>
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

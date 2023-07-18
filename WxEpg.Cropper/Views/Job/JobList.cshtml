@@ -1,0 +1,619 @@
+﻿@model WxEpg.Cropper.ViewModels.JobListViewModel
+@using WxEpg.Cropper.Models
+@using WxEpg.Cropper.ViewModels
+@using System.Text.RegularExpressions
+@{
+    Layout = null;
+    ViewBag.Title = "任务管理";
+    EpgAuth.EpgUser suser = (EpgAuth.EpgUser)Session["USER"];
+    int editId = suser.UserId;
+    var parameter = Model.Parameters;
+    string[] mtypes = new string[3] { "电影", "电视剧", "栏目" };
+    //string[] stypes = new string[12] { "新闻", "电视剧", "电影", "娱乐", "少儿", "体育", "财经", "生活", "科教", "纪录", "电视购物", "其它" };
+    string[] stypes = new string[8] { "新闻", "娱乐", "教育", "服务", "少儿", "体育", "财经", "其它" };
+    string[] ktypes = new string[3] { "分类", "图片", "内容" };
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <link href="~/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <link href="~/Plugins/tablesort/tablesort.css" rel="stylesheet" />
+    <style type="text/css">
+        .header h1, .content {
+            width: 980px;
+        }
+
+        input[type=text] {
+            padding: 2px 5px;
+        }
+
+        #startTime, #endTime {
+            width: 110px;
+        }
+
+        #startTime {
+            margin-right: 10px;
+        }
+
+        #endTime {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        #totalCount, #imageCount {
+            margin: 0 5px;
+            font-size: 1.2em;
+        }
+
+        #totalCount {
+            color: #F28E05;
+        }
+
+        #imageCount {
+            color: green;
+        }
+
+        #jobTable {
+        }
+
+            #jobTable th {
+                padding: 8px 0;
+                font-size: .75em;
+                vertical-align: top;
+            }
+
+            #jobTable td {
+                padding: 15px 0;
+                font-size: .75em;
+            }
+
+        .audit {
+            cursor: pointer;
+        }
+
+            .audit:hover {
+                background-color: #C7EDCC;
+            }
+
+                .audit:hover ul {
+                    position: relative;
+                    top: 1px;
+                }
+
+        .refresh {
+            margin-left: 5px;
+            font-size: 1.2em;
+            color: dodgerblue;
+            cursor: pointer;
+        }
+
+        .bedit {
+            margin: 0 5px;
+        }
+
+        .cgray {
+            color: lightgray;
+        }
+
+        .cgreen {
+            color: green;
+        }
+
+        .cred {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <i class="fa fa-spinner fa-pulse" id="loading"></i>
+
+    <div class="header">
+        <h1 class="clearfix">
+            <a href="~/Job/JobList">任务管理</a>
+            @Html.Partial("_PartialLogin")
+        </h1>
+    </div>
+
+    <div class="content">
+        @using (Html.BeginForm("JobList", "Job", FormMethod.Post))
+        {
+            <fieldset class="searchbox">
+                <legend>任务搜索</legend>
+                <ul>
+                    <li>
+                        @Html.Label("eventName", "节目名称：")
+                        @Html.TextBoxFor(o => o.Parameters.EventName, new { id = "eventName" })
+                    </li>
+                    <li>
+                        @Html.Label("channelName", "频道名称：")
+                        @Html.TextBoxFor(o => o.Parameters.ChannelName, new { id = "channelName" })
+                    </li>
+                    <li>
+                        <label>播出时间：</label>
+                        @Html.TextBoxFor(o => o.Parameters.StartTime, new { id = "startTime" }) 至 
+                        @Html.TextBoxFor(o => o.Parameters.EndTime, new { id = "endTime" })
+                        <select id="recentDay">
+                            <option value="">选择日期</option>
+                            <option value="-7">前七天</option>
+                            <option value="-3">前三天</option>
+                            <option value="-2">前二天</option>
+                            <option value="0">当天</option>
+                            <option value="2">后二天</option>
+                            <option value="3">后三天</option>
+                            <option value="7">后七天</option>
+                        </select>
+                    </li>
+                    <li>
+                        <label>节目类型：</label>
+                        @if (string.IsNullOrEmpty(parameter.MainType))
+                        {
+                            int i = 1;
+                            foreach (var type in mtypes)
+                            {
+                            <input id="type@(i)" type="radio" name="Parameters.MainType"
+                                value="@type" @(i == 1 ? "checked" : string.Empty) /><label for="type@(i)">@type</label>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            int j = 1;
+                            foreach (var type in mtypes)
+                            {
+                                string isChecked = (type == parameter.MainType) ? "checked" : string.Empty;
+                            <input id="type@(j)" type="radio" name="Parameters.MainType"
+                                value="@type" @isChecked /><label for="type@(j)">@type</label>
+                                j++;
+                            }
+                        }
+                    </li>
+                    <li>
+                        <label>频道分组：</label>
+                        @{
+                        var groups = string.IsNullOrEmpty(parameter.ChannelGroup) ?
+                            new string[] { } : parameter.ChannelGroup.Split(',');
+                        int k = 1;
+                        foreach (var group in Model.Groups)
+                        {
+                            string isChecked = groups.FirstOrDefault(o => o == group) != null ? "checked" : string.Empty;
+                            <input id="group@(k)" type="checkbox" name="Parameters.ChannelGroup"
+                                value="@group" @isChecked /><label for="group@(k)">@group</label>
+                            k++;
+                        }
+                        }
+                    </li>
+                    <li>
+                        <label>任务类型：</label>
+                        @{
+                        var taskTypes = string.IsNullOrEmpty(parameter.TaskType) ?
+                            new string[] { } : parameter.TaskType.Split(',');
+                        int m = 1;
+                        foreach (var ktype in ktypes)
+                        {
+                            string isChecked = taskTypes.FirstOrDefault(o => o == ktype) != null ? "checked" : string.Empty;
+                            <input id="ktype@(m)" type="checkbox" name="Parameters.TaskType"
+                                value="@ktype" @isChecked /><label for="ktype@(m)">@ktype</label>
+                        }
+                        }
+                    </li>
+                    <li>
+                        <input type="submit" value="搜索" />
+                    </li>
+                </ul>
+            </fieldset>
+        }
+
+        <div class="toolbar clearfix">
+            <p class="result fl">查询结果：<span id="totalCount"></span>条节目，图片编辑<span id="imageCount"></span>条</p>
+            <button class="fr" id="saves">保存</button>
+        </div>
+
+        @if (Model.Data != null)
+        {
+            if (Model.Data.Count <= 0)
+            {
+            <p class="nodata">暂无数据！</p>
+            }
+            else
+            {
+            <table class="tbl" id="jobTable">
+                <thead>
+                    <tr>
+                        <th>
+                            <input class="chkball" type="checkbox" />
+                        </th>
+                        <th>节目/栏目</th>
+                        <!--<th class="sort" data-type="date">播出时间</th>
+                        <th>频道/分组</th>-->
+                        <th>频道/分组/时间</th>
+                        <th>类型</th>
+                        <th>分类</th>
+                        <th class="sort" data-type="string" style="width: 100px">图片</th>
+                        <th style="width: 100px">状态<i class="refresh fa fa-refresh"></i></th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (JobItem item in Model.Data)
+                    {
+                        string href = item.VideoId == -1 ? "javascript:void(0)" : Url.Action("Video", "Job") + "?videoId=" + item.VideoId + "&videoName=" + item.Content;
+                        <tr data-vid="@item.VideoId" data-vname="@item.Content">
+                            <td>
+                                <input class="chkb" type="checkbox" />
+                            </td>
+                            <td>
+                                <a href="@href" target="_blank">@item.EventName</a>
+                                @if (string.Compare(item.EventName, item.Content, false) != 0)
+                                {
+                                    <br />@item.Content
+                                }
+                            </td>
+                            <!--<td>@item.PlayTime.AddHours(8).ToString("MM-dd HH:mm")</td>
+                            <td>@item.ChannelName/@item.ChannelGroup</td>-->
+                            <td>@item.ChannelName/@item.ChannelGroup（@item.PlayTime.AddHours(8).ToString("MM-dd HH:mm")）</td>
+                            <td>
+                                @if (item.VideoId != -1)
+                                {
+                                    <select class="maintype" disabled="disabled">
+                                        <option value="">选择类型</option>
+                                        @foreach (string type in mtypes)
+                                        {
+                                            <option value="@type" @(item.MainType == type ? "selected=selected" : "")>@type</option>
+                                        }
+                                    </select>                                
+                                }
+                            </td>
+                            <td>
+                                @if (item.VideoId != -1)
+                                {                            
+                                    <select class="category" disabled="disabled">
+                                        <option value="">选择分类</option>
+                                        @foreach (string subtype in stypes)
+                                        {
+                                            <option value="@subtype" @(item.Category == subtype ? "selected=selected" : "")>@subtype</option>
+                                        }
+                                    </select>
+                                }
+                            </td>
+                            <td data-imgs="@item.Imgs" style="padding:0 6px;">
+                                @if (!string.IsNullOrEmpty(item.Imgs))
+                                {
+                                    List<string> imgs = new List<string>();
+                                    var ms = new Regex(@"[12](?=\.)").Matches(item.Imgs);
+                                    foreach (var m in ms)
+                                    {
+                                        imgs.Add(m.ToString());
+                                    }
+                                    <span>@string.Join(",", imgs)</span>
+                                }
+                            </td>
+                            <td class="audit" title="点击此处可更新审核状态！">
+                                <ul>
+                                    @if (item.AuditStatus != null)
+                                    {
+                                        foreach (var kv in item.AuditStatus)
+                                        {
+                                            string taskName = string.Empty;
+                                            switch (kv.Key)
+                                            {
+                                                case "1":
+                                                    taskName = "分类";
+                                                    break;
+                                                case "2":
+                                                    taskName = "图片";
+                                                    break;
+                                                case "3":
+                                                    taskName = "内容";
+                                                    break;
+                                            }
+                                            string taskStatus = kv.Value == "1" ? "编辑" : kv.Value == "2" ? "审核成功" : "审核失败";
+                                            string taskClass = kv.Value == "1" ? "cgray" : kv.Value == "2" ? "cgreen" : "cred";
+                                        <li title="@taskStatus">
+                                            <label>@taskName：</label><i class="fa fa-circle @taskClass"></i>
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </td>
+                            <td>
+                                <a class="iedit" href="~/Job/Image?videoId=@item.VideoId&videoName=@item.Content" title="编辑图片" target="_blank">图片</a>
+                                <a class="bedit" href="#" title="编辑基本信息" target="_blank">内容</a>
+                                <button class="save" title="保存主类型、分类" disabled="disabled">保存</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            }
+        }
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Plugins/tablesort/tablesort.js"></script>
+    <script type="text/javascript">
+        function init() {
+            $("#loading").hide();
+            $("#startTime,#endTime").datetimepicker({ lang: "ch", format: "Y-m-d H:i" });
+            var totalCount = $("#jobTable tbody tr").length;
+            var imageCount = $("[data-imgs='']").length;
+            $(".result #totalCount").text(totalCount);
+            $(".result #imageCount").text(totalCount - imageCount);
+        }
+
+        Date.prototype.toCustomString = function (format) {
+            var o = {
+                "y+": this.getFullYear(),//年
+                "M+": this.getMonth() + 1,//月
+                "d+": this.getDate(),//日
+                "h+": this.getHours(),//时
+                "m+": this.getMinutes(),//分
+                "s+": this.getSeconds(),//秒
+                "S": this.getMilliseconds()//毫秒
+            };
+            for (var i in o) {
+                if (new RegExp("(" + i + ")").test(format)) {
+                    if (i === "S") {
+                        format = format.replace(RegExp.$1, o[i].toString());
+                    } else {
+                        format = format.replace(RegExp.$1, o[i].toString().substr(o[i].toString().length - RegExp.$1.length));
+                    }
+                }
+            }
+            return format;
+        }
+
+        function recentDay() {
+            $("#recentDay").change(function () {
+                var value = $(this).val();
+                if (!value) {
+                    $("#startTime,#endTime").val("");
+                    return;
+                }
+                var dtnow = Date.now(),
+                    DAYMS = 24 * 60 * 60 * 1000;
+                var start, end;
+                if (value < 0) {
+                    start = new Date(dtnow + parseInt(value) * DAYMS).toCustomString("yyyy-MM-dd 00:00");
+                    end = new Date(dtnow).toCustomString("yyyy-MM-dd 00:00");
+                } else if (value == 0) {
+                    start = new Date(dtnow).toCustomString("yyyy-MM-dd 00:00");
+                    end = new Date(dtnow + 1 * DAYMS).toCustomString("yyyy-MM-dd 00:00");
+                } else {
+                    start = new Date(dtnow + 1 * DAYMS).toCustomString("yyyy-MM-dd 00:00");
+                    end = new Date(dtnow + (parseInt(value) + 1) * DAYMS).toCustomString("yyyy-MM-dd 00:00");
+                }
+                $("#startTime").val(start);
+                $("#endTime").val(end);
+            });
+        }
+
+        function chkbAll() {
+            $(".chkball").click(function () {
+                if (this.checked) {
+                    $(".chkb").attr("checked", "checked");
+                    $(".maintype,.category,.save").removeAttr("disabled");
+                } else {
+                    $(".chkb").removeAttr("checked");
+                    $(".maintype,.category,.save").attr("disabled", "disabled");
+                }
+            });
+        }
+
+        function chkbToggle() {
+            $(document).on("click", ".chkb", function () {
+                var ctr = $(this).parents("tr");
+                var maintype = ctr.find(".maintype");
+                var category = ctr.find(".category");
+                var save = ctr.find(".save");
+                if (this.checked) {
+                    maintype.removeAttr("disabled");
+                    category.removeAttr("disabled");
+                    save.removeAttr("disabled");
+                } else {
+                    maintype.attr("disabled", "disabled");
+                    category.attr("disabled", "disabled");
+                    save.attr("disabled", "disabled");
+                }
+            });
+        }
+
+        function tableSort() {
+            $("#jobTable").tableSort();
+        }
+
+        function isChecked() {
+            var result = false;
+            $(".chkb").each(function () {
+                if (this.checked) {
+                    result = true;
+                    return false;
+                }
+            });
+            return result;
+        }
+
+        function getStatus(url, videoId, auditElem) {
+            if (videoId == -1) {
+                alert("影视剧编号未关联，无法更新审核状态！");
+                return;
+            }
+            $.ajax({
+                url: url + "?videoId=" + videoId,
+                type: "get",
+                dataType: "json",
+                beforeSend: function () {
+                    $(".loading").show();
+                },
+                success: function (data) {
+                    if (data) {
+                        var ul = '<ul>';
+                        for (var prop in data) {
+                            var taskName = '';
+                            switch (prop) {
+                                case "1":
+                                    taskName = "分类";
+                                    break;
+                                case "2":
+                                    taskName = "图片";
+                                    break;
+                                case "3":
+                                    taskName = "内容";
+                                    break;
+                            }
+                            var taskStatus = data[prop] == "1" ? "编辑" : "审核";
+                            var taskClass = data[prop] == "1" ? "cgray" : "cgreen";
+                            var li = '<li title="' + taskStatus + '"><label>' + taskName + '：</label>' +
+                                '<i class="fa fa-circle ' + taskClass + '"></i></li>';
+                            ul += li;
+                        }
+                        ul += '</ul>';
+                        auditElem.find("ul").replaceWith(ul);
+                    }
+                },
+                complete: function () {
+                    $(".loading").hide();
+                }
+            });//end ajax 
+        }
+
+        //保存单个分类
+        function saveCategory(surl, aurl, editId) {
+            $(document).on("click", ".save", function () {
+                var $this = $(this);
+                var ctr = $this.parents("tr");
+                var chkb = ctr.find(".chkb");
+                if (!chkb[0].checked) return;
+                var videoId = ctr.data("vid");
+                var videoName = ctr.data("vname");
+                var mainType = ctr.find(".maintype");
+                var category = ctr.find(".category");
+                var postData = [];
+                postData.push({ name: "vc.EditId", value: editId });
+                postData.push({ name: "vc.VideoId", value: videoId });
+                postData.push({ name: "vc.VideoName", value: videoName });
+                postData.push({ name: "vc.MainType", value: mainType.val() });
+                postData.push({ name: "vc.Category", value: category.val() });
+                $.getJSON(surl, postData, function (data) {
+                    if (data) {
+                        if (data.status) {
+                            $(".chkball").removeAttr("checked");
+                            chkb.removeAttr("checked");
+                            mainType.attr("disabled", "disabled");
+                            category.attr("disabled", "disabled");
+                            $this.attr("disabled", "disabled");
+                            alert("保存成功！");
+                            //更新审核状态
+                            getStatus(aurl, parseInt(videoId), ctr.find(".audit"));
+                        } else {
+                            alert("保存失败！");
+                        }
+                    }
+                });
+            });
+        }
+
+        //保存多个分类
+        function savesCategories(url, editId) {
+            $("#saves").click(function () {
+                if (!isChecked()) {
+                    alert("无选中项！");
+                    return;
+                }
+                var list = [];
+                $(".chkb:checked").each(function (index) {
+                    var ctr = $(this).parents("tr");
+                    list.push({
+                        "editId": editId,
+                        "videoId": ctr.data("vid"),
+                        "videoName": ctr.data("vname"),
+                        "mainType": ctr.find(".maintype").val(),
+                        "category": ctr.find(".category").val()
+                    });
+                });
+                var postData = [];
+                for (var i = 0; i < list.length; i++) {
+                    postData.push({ name: "vcs[" + i + "].EditId", value: list[i].editId });
+                    postData.push({ name: "vcs[" + i + "].VideoId", value: list[i].videoId });
+                    postData.push({ name: "vcs[" + i + "].VideoName", value: list[i].videoName });
+                    postData.push({ name: "vcs[" + i + "].MainType", value: list[i].mainType });
+                    postData.push({ name: "vcs[" + i + "].Category", value: list[i].category });
+                }
+                $.post(url, postData, function (data) {
+                    if (data) {
+                        if (data.status) {
+                            $(".chkball,.chkb").removeAttr("checked");
+                            $(".maintype,.category,.save").attr("disabled", "disabled");
+                            alert("保存成功！");
+                        } else {
+                            alert("保存失败！");
+                        }
+                    }
+                }, "json");
+            });
+        }
+
+        //更新单个审核状态
+        function updateStatus(url) {
+            $(".audit").click(function () {
+                var $this = $(this);
+                var ctr = $this.parents("tr");
+                var vid = ctr.data("vid") || ctr.attr("data-vid");
+                var videoId = parseInt(vid);
+                getStatus(url, videoId, $this);
+            });
+        }
+
+        //更新多个审核状态
+        function updateStatuses() {
+            $(".refresh").click(function () {
+                window.location.reload(true);
+            });
+        }
+
+        function basicEdit(burl) {
+            $(".bedit").click(function () {
+                var ctr = $(this).parents("tr");
+                var videoId = ctr.data("vid");
+                var videoName = ctr.data("vname");
+                var mainType = ctr.find(".maintype").val();
+                if (!videoName) {
+                    alert("剧名不能为空！");
+                    return;
+                }
+                if (videoId == -1 && !mainType) {
+                    alert("该剧不存在，主类型为必填项！");
+                    return;
+                }
+                $(this).attr("href", burl + "?videoId=" + videoId + "&videoName=" + videoName + "&mainType=" + mainType);
+            });
+        }
+
+        $(document).ready(function (event) {
+            var editId = '@editId';
+            var surl = '@Url.Action("SaveSingleVideoCategory", "Job")';
+            var murl = '@Url.Action("SaveMultipleVideoCategories", "Job")';
+            var burl = '@Url.Action("Basic", "Job")';
+            var aurl = '@Url.Action("UpdateAuditStatus", "Job")';
+
+            init();
+            recentDay();
+            chkbAll();
+            chkbToggle();
+            tableSort();
+            saveCategory(surl, aurl, editId);
+            savesCategories(murl, editId);
+            updateStatus(aurl);
+            updateStatuses();
+            basicEdit(burl);
+        });
+    </script>
+</body>
+</html>

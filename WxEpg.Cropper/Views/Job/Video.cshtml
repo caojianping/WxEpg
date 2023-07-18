@@ -1,0 +1,210 @@
+﻿@model WxEpg.Cropper.ViewModels.VideoViewModel
+@using WxNetInfo.Json
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>影视剧详情信息</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <link href="~/Content/video.css" rel="stylesheet" />
+    <style type="text/css">
+        .block {
+            margin: 15px auto;
+            border: 1px solid transparent;
+        }
+
+            .block .block-head {
+                padding: 5px 0;
+            }
+
+                .block .block-head .block-title {
+                    font-size: 1.4em;
+                    text-indent: 10px;
+                    border-left: 15px solid dodgerblue;
+                }
+
+            .block .block-body {
+                padding: 10px 30px;
+                font-size: .875em;
+            }
+
+        .tabs {
+        }
+
+            .tabs .tabs-anchor {
+                display: inline-block;
+                color: gray;
+                text-align: center;
+                border: 1px solid lightgray;
+            }
+
+                .tabs .tabs-anchor:hover {
+                    border-color: dodgerblue;
+                }
+
+                .tabs .tabs-anchor.active {
+                    color: white;
+                    background-color: dodgerblue;
+                    border-color: dodgerblue;
+                }
+
+            .tabs .tabs-panel {
+                display: none;
+            }
+
+        #basic {
+            float: left;
+        }
+
+            #basic li {
+                padding: 6px 0;
+                border-bottom: 1px dashed lightgray;
+            }
+
+                #basic li label {
+                    display: inline-block;
+                    width: 80px;
+                    color: gray;
+                    font-weight: bold;
+                }
+
+        #poster {
+            float: right;
+        }
+
+            #poster li:not(:nth-child(1)) {
+                width: 240px;
+                height: 240px;
+            }
+
+            #poster .tabs-anchor {
+                padding: 3px 10px;
+            }
+
+        #episode {
+        }
+
+            #episode .tabs-anchor {
+                margin: 10px 6px 0 0;
+                padding: 5px 0;
+                width: 70px;
+            }
+
+            #episode ul {
+                padding: 15px 0;
+            }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="clearfix">
+            <a href="~/Job/Video?id=@Model.VideoId&name=@Model.VideoName">@Model.VideoName</a>
+            @Html.Partial("_PartialLogin")
+        </h1>
+    </div>
+
+    <div class="content">
+        <!--基本信息-->
+        <div class="block">
+            <header class="block-head">
+                <h2 class="block-title">基本信息</h2>
+            </header>
+            <div class="block-body clearfix">
+                <ul id="basic">
+                    @foreach (var item in Model.Main)
+                    {
+                        <li>
+                            <label>@item.Key</label><span>@item.Value</span>
+                        </li>
+                    }
+                </ul>
+                <ul class="tabs" id="poster">
+                    <li><a class="tabs-anchor">横版</a><a class="tabs-anchor">竖版</a></li>
+                    <li class="tabs-panel">
+                        <img src="http://www.epg.org.cn:6533/video/Img/@(Model.VideoId)_1.jpg" width="240" height="180" />
+                    </li>
+                    <li class="tabs-panel">
+                        <img src="http://www.epg.org.cn:6533/video/Img/@(Model.VideoId)_2.jpg" width="180" height="240" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!--剧情简介-->
+        <div class="block">
+            <header class="block-head">
+                <h2 class="block-title">剧情简介</h2>
+            </header>
+            <div class="block-body">
+                @if (!string.IsNullOrEmpty(Model.Synopsis))
+                {
+                    <p>@Model.Synopsis</p>
+                }
+                else
+                {
+                    <p>暂未相关剧情！</p>
+                }
+            </div>
+        </div>
+
+        <!--分集信息-->
+        @{List<string> sids = Model.Section.Select(o => o.SectionId).ToList();}
+        <div class="block">
+            <header class="block-head">
+                <h2 class="block-title">分集信息</h2>
+            </header>
+            <div class="block-body tabs" id="episode">
+                <p>
+                    @foreach (string sid in sids)
+                    {
+                        <a class="tabs-anchor">@sid</a>
+                    }
+                </p>
+                <ul>
+                    @foreach (var item in Model.Section)
+                    {
+                        <li class="tabs-panel" data-sid="@item.SectionId">
+                            <p>
+                                <strong>播出地址：</strong>
+                                <a href="@item.PlayUrl" target="_blank">@item.PlayUrl</a>
+                            </p>
+                            <p>
+                                <strong>播出内容：</strong>
+                                <span>@item.SectionDesc</span>
+                            </p>
+                        </li>                  
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript">
+        function tabs(id) {
+            $(id + ".tabs").find(".tabs-anchor").first().addClass("active");
+            $(id + ".tabs").find(".tabs-panel").first().css({ "display": "block" });
+            $(id + ".tabs").find(".tabs-anchor").each(function (index) {
+                $(this).click(function () {
+                    $(id + ".tabs").find(".tabs-anchor").removeClass("active");
+                    $(this).addClass("active");
+                    $(id + ".tabs").find(".tabs-panel").hide();
+                    $(id + ".tabs").find(".tabs-panel").eq(index).show();
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            tabs("#poster");
+            tabs("#episode");
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,129 @@
+﻿.section {
+    padding: 10px 15px;
+    border-bottom: 1px solid lightgray;
+}
+
+    .section header h2 {
+        font-size: 1.2em;
+    }
+
+    .section p {
+        padding: 2px 0;
+        font-size: .75em;
+    }
+
+.poster {
+    float: left;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: 38.2%;
+}
+
+    .poster .simg {
+        padding: 2px;
+        border: 1px solid lightgray;
+    }
+
+    .poster .eimg {
+        display: none;
+        padding: 2px;
+        font-size: 1em;
+        font-style: italic;
+        text-align: center;
+        color: gray;
+        border: 1px solid lightgray;
+    }
+
+.basic {
+}
+
+    .basic p {
+        position: relative;
+        padding: 5px 0;
+        font-size: .875em;
+    }
+
+.love, .lookback, .pay {
+    position: absolute;
+    right: 0;
+    top: 7px;
+    width: 20px;
+    font-size: 1.2em;
+    text-align: center;
+    cursor: pointer;
+}
+
+.love {
+    /*color: rgb(255,127,39);*/
+    color: gray;
+}
+
+.lookback {
+    /*color: rgb(150,217,234);*/
+    color: gray;
+}
+
+.pay {
+    /*color: rgb(159,68,163);*/
+    color: gray;
+}
+
+.navlist {
+    width: 100%;
+}
+
+    .navlist td {
+        width: 50%;
+        padding: 10px 15px;
+        border-bottom: 1px solid lightgray;
+    }
+
+        .navlist td:nth-child(even) {
+            border-left: 1px solid lightgray;
+        }
+
+    .navlist section {
+    }
+
+        .navlist section header {
+            position: relative;
+        }
+
+            .navlist section header h2 {
+                font-size: 1.2em;
+            }
+
+        .navlist section p {
+            padding: 2px 0;
+            font-size: .75em;
+            color: dimgray;
+        }
+
+    .navlist a {
+        color: #333;
+    }
+
+.contribute {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: "隶书";
+    font-size: x-large;
+    color: purple;
+    line-height: 24px;
+    cursor: pointer;
+}
+
+.wmore {
+    display: none;
+}
+
+.wtoggle {
+    padding-left: 5px;
+    color: #999;
+    cursor: pointer;
+}
+
+    .wtoggle .fa {
+        text-indent: 0;
+    }

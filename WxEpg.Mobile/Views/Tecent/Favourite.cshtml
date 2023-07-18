@@ -1,0 +1,155 @@
+﻿@model List<WxEpg.Mobile.Models.VideoExtendView>
+@using WxEpg.Mobile.Models
+@{
+    ViewBag.Title = "大家爱看";
+}
+
+@section styles{
+    <link href="~/Plugins/tablesort/tablesort.css" rel="stylesheet" />
+    <style type="text/css">
+        .header {
+            height: 40px;
+            border: 1px solid lightgray;
+        }
+
+        .fnavs a {
+            display: inline-block;
+            padding: 0 6px;
+            height: 40px;
+            line-height: 40px;
+            color: black;
+            text-align: center;
+            border-right: 1px solid lightgray;
+        }
+
+            .fnavs a:hover {
+                color: deepskyblue;
+            }
+
+            .fnavs a.active {
+                height: 38px;
+                line-height: 38px;
+                color: deepskyblue;
+                border-bottom: 2px solid deepskyblue;
+            }
+
+        #favourites {
+            margin: 41px 0 48px 0;
+            width: 100%;
+            text-align: center;
+            background-color: white;
+        }
+
+            #favourites tr {
+                border-bottom: 1px solid lightgray;
+            }
+
+            #favourites tbody tr:nth-child(odd) {
+                background-color: #f9f9f9;
+            }
+
+            #favourites th {
+                padding: 8px 0;
+                font-size: .875em;
+            }
+
+            #favourites td {
+                padding: 4px 0;
+                font-size: .75em;
+            }
+
+            #favourites a {
+                display: block;
+                margin: auto;
+                width: 100px;
+                color: black;
+                overflow: hidden;
+                white-space: nowrap;
+                -ms-text-overflow: ellipsis;
+                -o-text-overflow: ellipsis;
+                text-overflow: ellipsis;
+            }
+    </style>
+}
+
+<div class="header">
+    <nav class="fnavs">
+        <a class="active" data-type="*">全部</a><a data-type="电视剧">电视剧</a><a data-type="电影">电影</a><a data-type="栏目">综艺</a><a data-type="其它">其它</a>
+    </nav>
+</div>
+
+<table id="favourites">
+    <thead>
+        <tr>
+            <th class="sort" data-type="int">排名</th>
+            <th class="sort" data-type="string">名称</th>
+            <th class="sort" data-type="int">访问量</th>
+            <th class="sort" data-type="int">关注度</th>
+            <th class="sort" data-type="int">评论</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 0;
+            foreach (VideoExtendView item in Model)
+            {
+            <tr data-maintype="@item.mainType">
+                <td>@(i + 1)</td>
+                <td>@Html.ActionLink(item.name, "Index", "Video", new { id = item.videoId }, new { style = "text-decoration:underline" })</td>
+                <td>@item.visitCount</td>
+                <td>@item.loveCount</td>
+                <td>@item.discussCount</td>
+            </tr>
+                i++;
+            }        
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script src="~/Plugins/tablesort/tablesort.js"></script>
+    <script type="text/javascript">
+        function fnavsToggle() {
+            $(".fnavs a").each(function () {
+                $(this).click(function () {
+                    $(".fnavs a").removeClass("active");
+                    $(this).addClass("active");
+                    var trs = $("#favourites tbody tr");
+                    var type = $(this).data("type");
+                    if (type === "*") {
+                        trs.show();
+                        return true;
+                    }
+                    if (type === "其它") {
+                        trs.each(function () {
+                            var mtype = $(this).data("maintype");
+                            if (mtype === "" || mtype === "其它") {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                        return true;
+                    }
+                    trs.each(function () {
+                        var mtype = $(this).data("maintype");
+                        if (mtype === type) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                });
+            });
+        }
+
+        function tableSort() {
+            $("table#favourites").tableSort();
+        }
+
+        $(document).ready(function () {
+            fnavsToggle();
+            tableSort();
+        });
+    </script>
+}

@@ -1,0 +1,224 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>微信EPG生产管理登录</title>
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            background: -moz-radial-gradient(center, circle,aliceblue,lightskyblue);
+            background: -webkit-radial-gradient(center, circle,aliceblue,lightskyblue);
+            background: -o-radial-gradient(center, circle,aliceblue,lightskyblue );
+            background: radial-gradient(center, circle,aliceblue,lightskyblue );
+        }
+
+        .panel {
+            position: absolute;
+            top: 200px;
+            left: 50%;
+            margin-left: -250px;
+            width: 500px;
+            -moz-box-shadow: 0 0 20px black;
+            -webkit-box-shadow: 0 0 20px black;
+            box-shadow: 0 0 20px black;
+        }
+
+        .panel-head {
+            display: block;
+        }
+
+            .panel-head .panel-title {
+                height: 60px;
+                font-size: 1.8em;
+                line-height: 60px;
+                color: white;
+                text-align: center;
+                letter-spacing: 2px;
+                background-color: #015fbd;
+                background: -webkit-linear-gradient(top, #0166cc 0%, #00468c 100%);
+                background: -moz-linear-gradient(top, #0166cc 0%, #00468c 100%);
+                background: linear-gradient(top, #0166cc 0%, #00468c 100%);
+                border: solid 1px #0166cc;
+            }
+
+        .panel-body {
+            background-color: white;
+        }
+
+            .panel-body li:nth-child(1) {
+                padding-top: 50px;
+            }
+
+            .panel-body li:nth-child(2) {
+                padding-top: 30px;
+            }
+
+            .panel-body li:nth-child(3) {
+                padding: 30px 0 15px 100px;
+            }
+
+            .panel-body li:last-child {
+                padding-bottom: 50px;
+                text-align: center;
+            }
+
+        .panel-item {
+            margin: auto;
+            width: 320px;
+            height: 55px;
+            background-color: #ededed;
+            background: -webkit-linear-gradient(0deg, #ededed 97%, #cecece 3%);
+            background: -moz-linear-gradient(0deg, #ededed 97%, #cecece 3%);
+            background: linear-gradient(0deg, #ededed 97%, #cecece 3%);
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+        }
+
+            .panel-item i {
+                width: 55px;
+                height: 55px;
+                font-size: 1.6em;
+                line-height: 55px;
+                color: white;
+                text-align: center;
+                background: #015fbd;
+                background: -webkit-linear-gradient(top, #0166cc 0%, #00468c 100%);
+                background: -moz-linear-gradient(top, #0166cc 0%, #00468c 100%);
+                background: linear-gradient(top, #0166cc 0%, #00468c 100%);
+                -webkit-border-top-left-radius: 4px;
+                -moz-border-top-left-radius: 4px;
+                border-top-left-radius: 4px;
+                -webkit-border-bottom-left-radius: 4px;
+                -moz-border-bottom-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+            }
+
+            .panel-item input {
+                margin-left: 15px;
+                width: 160px;
+                font-size: 1em;
+                border: none;
+                outline: none;
+                background-color: transparent;
+            }
+
+        #remember {
+            margin: 0;
+            width: 20px;
+            height: 20px;
+            vertical-align: text-bottom;
+            cursor: pointer;
+        }
+
+        [for=remember] {
+            color: gray;
+            cursor: pointer;
+        }
+
+        #login {
+            display: inline-block;
+            padding: 10px 50px;
+            font-size: 1em;
+            font-weight: bold;
+            color: lightblue;
+            text-align: center;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border: 1px solid #013971;
+            background-color: #0158b1;
+            background: -webkit-linear-gradient(top, #0078f2 0%, #00468c 100%);
+            background: -moz-linear-gradient(top, #0078f2 0%, #00468c 100%);
+            background: -o-linear-gradient(top, #0078f2 0%, #00468c 100%);
+            background: linear-gradient(to bottom, #0078f2 0%, #00468c 100%);
+        }
+
+            #login:hover {
+                background-color: #014d9c;
+                background: -webkit-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                background: -moz-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                background: -o-linear-gradient(top, #0166cd 0%, #013b76 100%);
+                background: linear-gradient(to bottom, #0166cd 0%, #013b76 100%);
+            }
+
+            #login:active {
+                color: #5aabfe;
+                background: -webkit-linear-gradient(top, #00468c 0%, #0078f2 100%);
+                background: -moz-linear-gradient(top, #00468c 0%, #0078f2 100%);
+                background: -o-linear-gradient(top, #00468c 0%, #0078f2 100%);
+                background: linear-gradient(to bottom, #00468c 0%, #0078f2 100%);
+            }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <header class="panel-head">
+            <h1 class="panel-title">微信EPG生产管理系统</h1>
+        </header>
+        <div class="panel-body">
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = "loginForm" }))
+            {
+                <ul>
+                    <li>
+                        <div class="panel-item">
+                            <i class="fa fa-user"></i>
+                            <input id="userName" type="text" name="userName" placeholder="UserName" autofocus />
+                        </div>
+                    </li>
+                    <li>
+                        <div class="panel-item">
+                            <i class="fa fa-key"></i>
+                            <input id="password" type="password" name="password" placeholder="Password" />
+                        </div>
+                    </li>
+                    <li>
+                        <input id="remember" type="checkbox" name="remember" value="true" />
+                        <label for="remember">七天内免登录</label>
+                    </li>
+                    <li>
+                        <input id="login" type="submit" value="登录" />
+                    </li>
+                </ul>
+            }
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript">
+        function initMsg(msg) {
+            if (!msg) return;
+            alert(msg);
+        }
+
+        function initStyle() {
+            $("#userName").focus();
+        }
+
+        function enterLogin() {
+            $(document).keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#loginForm").submit();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var msg = '@TempData["Msg"]';
+            initMsg(msg);
+            initStyle();
+            enterLogin();
+        });
+    </script>
+</body>
+</html>

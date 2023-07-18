@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WxEpg.Mobile.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="PromoterUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://www.epg.org.cn/wxcallback/</Value>
+    </Setting>
+    <Setting Name="VideoUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://www.epg.org.cn:6533/</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

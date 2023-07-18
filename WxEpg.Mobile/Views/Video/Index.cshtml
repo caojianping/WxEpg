@@ -1,0 +1,306 @@
+﻿@model WxEpg.Mobile.ViewModels.VideoModel
+@{
+    ViewBag.Title = Model.VideoName;
+    Layout = "~/Views/Shared/_LayoutNoMenu.cshtml";
+}
+
+@section styles{
+    <link href="~/Content/video.css" rel="stylesheet" />
+}
+
+<section class="section clearfix">
+    <div class="poster">
+        <img class="simg" src="http://www.epg.org.cn:6533/video/Img/@(Model.VideoId)_2.jpg" />
+        <p class="eimg">暂无图片</p>
+    </div>
+    <div class="basic">
+        @if (Model.Main != null && Model.Main.Count > 0)
+        {
+            var basicInfo = Model.Main;
+            if (basicInfo.Keys.Contains("名称"))
+            {
+            <p>
+                <span>名称：</span>@basicInfo["名称"]<i class="love fa fa-heart"></i>
+            </p>
+            }
+            if (basicInfo.Keys.Contains("一级分类"))
+            {
+            <p>
+                <span>类别：</span>@basicInfo["一级分类"]<i class="lookback fa fa-caret-square-o-right"></i>
+            </p>
+            }
+            if (basicInfo.Keys.Contains("总集数"))
+            {
+            <p>
+                <span>集数：</span>@basicInfo["总集数"]<i class="pay fa fa-jpy"></i>
+            </p>
+            }
+            if (basicInfo.Keys.Contains("导演"))
+            {
+            <p>
+                <span>导演：</span>@basicInfo["导演"]
+            </p>
+            }
+            if (basicInfo.Keys.Contains("主演"))
+            {
+            <p>
+                <span>主演：</span>@basicInfo["主演"]
+            </p>
+            }
+            if (basicInfo.Keys.Contains("二级分类"))
+            {
+            <p>
+                <span>标签：</span><span style="color: gray">@basicInfo["二级分类"]</span>
+            </p>
+            }
+            <p>
+                <span style="font-size: larger">评分：10分</span><span style="margin-left: 15px">0人参与评论</span>
+            </p>
+        }
+    </div>
+</section>
+
+<section class="section">
+    <header>
+        <h2>播出时间：</h2>
+    </header>
+    <table style="width: 100%; font-size: .75em;">
+        @foreach (var kv in Model.Programs)
+        {
+            string cname = kv.Key;
+            for (int i = 0; i < kv.Value.Count; i++)
+            {
+                if (i == 0)
+                {
+            <tr>
+                <td rowspan="@kv.Value.Count" style="vertical-align:top"><strong>@cname</strong></td>
+                <td>@kv.Value[i]</td>
+            </tr>
+                }
+                else
+                {
+            <tr>
+                <td>@kv.Value[i]</td>
+            </tr>
+                }
+            }
+        }
+    </table>
+</section>
+
+<table class="navlist">
+    <tr>
+        <td>
+            <section>
+                <header>
+                    <h2><a href="#n1">剧情</a></h2>
+                </header>
+                @if (!string.IsNullOrEmpty(Model.Synopsis))
+                {
+                    <p>@(Model.Synopsis.Trim().Length > 10 ? Model.Synopsis.Trim().Substring(0, 6) + "……" : Model.Synopsis.Trim())</p>
+                }
+                else
+                {
+                    <p>暂未相关剧情！</p>
+                }
+            </section>
+        </td>
+        <td>
+            <section>
+                <header>
+                    <h2>文章@*<span class="contribute">投</span>*@</h2>
+                </header>
+                <p>@(Model.ArticleCount > 0 ? Model.ArticleCount + "篇美文，分享有奖" : "暂未关联文章！")</p>
+            </section>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <section>
+                @if (!string.IsNullOrEmpty(Model.Blog.Url))
+                {
+                    <header>
+                        <h2><a href="@Model.Blog.Url">微博</a></h2>
+                    </header>
+                    <p id="blog" data-attach="@Model.Blog.Attach">
+                        <span>粉丝:</span><span class="first"></span>&nbsp;&nbsp;
+                            <span>微博:</span><span class="second"></span>
+                    </p>
+                }
+                else
+                {
+                    <header>
+                        <h2><a href="javascript:void(0)">微博</a></h2>
+                    </header>
+                    <p>暂未关联微博！</p>
+                }
+            </section>
+        </td>
+        <td>
+            <section>
+                @if (!string.IsNullOrEmpty(Model.PostBar.Url))
+                {
+                    <header>
+                        <h2><a href="http://tieba.baidu.com/@(Model.PostBar.Url)">贴吧</a></h2>
+                    </header>
+                    <p id="postBar" data-attach="@Model.PostBar.Attach">
+                        <span>关注:</span><span class="first"></span>&nbsp;&nbsp;
+                            <span>帖子:</span><span class="second"></span>
+                    </p>
+                }
+                else
+                {
+                    <header>
+                        <h2><a href="javascript:void(0)">贴吧</a></h2>
+                    </header>
+                    <p>暂未关联贴吧！</p>
+                }
+            </section>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <section>
+                <header>
+                    <h2><a href="/Video/Comment?id=@Model.VideoId">站内讨论</a></h2>
+                </header>
+                <p>开发中，敬请期待！</p>
+            </section>
+        </td>
+        <td>
+            <section>
+                <header>
+                    <h2>微信群聊</h2>
+                </header>
+                <p>开发中，敬请期待！</p>
+            </section>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3><a href="javascript:void(0)">主要角色</a></h3>
+        </td>
+        <td>
+            <h3><a href="javascript:void(0)">剧照海报</a></h3>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3><a href="javascript:void(0)">精彩花絮</a></h3>
+        </td>
+        <td>
+            <h3><a href="javascript:void(0)">经典台词</a></h3>
+        </td>
+    </tr>
+</table>
+
+<section class="section" id="n1">
+    <header>
+        <h2>剧情：</h2>
+    </header>
+    @if (!string.IsNullOrEmpty(Model.Synopsis))
+    {
+        if (Model.Synopsis.Trim().Length > 80)
+        {
+        <p style="text-indent: 24px">
+            <span>@Model.Synopsis.Trim().Substring(0, 80)</span>
+            <span class="wmore">@Model.Synopsis.Trim().Substring(80)</span>
+            <a class="wtoggle"><i class="fa fa-angle-double-right"></i><small>展开</small></a>
+        </p>
+        }
+        else
+        {
+        <p style="text-indent: 24px">@Model.Synopsis.Trim()</p>
+        }
+    }
+</section>
+
+@section scripts{
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="~/Scripts/jwx.helper.js"></script>
+    <script type="text/javascript">
+        wxConfig('@Html.Raw(Model.Sign)');
+    </script>
+
+    <script type="text/javascript">
+        function initExtend(url, data) {
+            window.onload = function () {
+                $.get(url, data);
+            };
+        }
+
+        function setLove(url, data) {
+            $(".love").click(function () {
+                $.get(url, data, function (e) {
+                    if (e.status) {
+                        $(".love").removeClass("fa-heart-o").addClass("fa-heart");
+                    } else {
+                        alert(e.msg);
+                    }
+                });
+            });
+        }
+
+        function initStyle() {
+            var w = $(".poster").width();
+            $(".simg,.eimg").css({
+                "width": w - 6,
+                "height": 1.333 * w - 6,
+            });
+            $(".eimg").css("line-height", 1.333 * w + "px");
+        }
+
+        function initData() {
+            if ($("#blog").length >= 1) {
+                var data = $("#blog").data("attach");
+                $("#blog").children(".first").text(data.lover);
+                $("#blog").children(".second").text(data.weibo);
+            }
+            if ($("#postBar").length >= 1) {
+                var data = $("#postBar").data("attach");
+                $("#postBar").children(".first").text(data.watch);
+                $("#postBar").children(".second").text(data.post);
+            }
+        }
+
+        function errorImage() {
+            $(".poster .simg").error(function () {
+                $(this).hide();
+                $(this).siblings(".eimg").show();
+            });
+        }
+
+        function moreToggle() {
+            $(".wtoggle").each(function (index) {
+                $(this).click(function () {
+                    if ($(this).find(".fa").hasClass("fa-angle-double-right")) {
+                        $(".wmore").eq(index).show();
+                        $(this).find("small").text("收缩");
+                        $(this).find(".fa").removeClass("fa-angle-double-right").addClass("fa-angle-double-left");
+                    } else {
+                        $(".wmore").eq(index).hide();
+                        $(this).find("small").text("展开");
+                        $(this).find(".fa").removeClass("fa-angle-double-left").addClass("fa-angle-double-right");
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            var sdata = { title: '@Model.VideoName', desc: '@Model.Synopsis', link: window.location.href };
+            var surl = '@Url.Action("AddShareMsg", "Base")';
+            //type:0表示访问；1表示喜爱；
+            var edata = { "videoId": '@Model.VideoId', "type": 0, "content": "" };
+            var ldata = { "videoId": '@Model.VideoId', "type": 1, "content": "" };
+            var eurl = '@Url.Action("InitExtend", "Video")';
+
+            wxReady(sdata, surl);
+            initExtend(eurl, edata);
+            setLove(eurl, ldata);
+            initStyle();
+            initData();
+            errorImage();
+            moreToggle();
+        });
+    </script>
+}
